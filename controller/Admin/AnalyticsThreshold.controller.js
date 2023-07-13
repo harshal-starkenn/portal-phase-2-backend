@@ -2,7 +2,7 @@
 // const AT_Incentive = require("../../models/Admin/Analytics_Threshold/Incentive.model");
 // const AT_Accident = require("../../models/Admin/Analytics_Threshold/Accident.model");
 // const AT_LB = require("../../models/Admin/Analytics_Threshold/LeadershipBoard.model");
-//const AT_Halt = require("../../models/Admin/Analytics_Threshold/Halt.model");
+const AT_Halt = require("../../models/Admin/Analytics_Threshold/Halt.model");
 const AnalyticsThresholds = require("../../models/Admin/AT.model");
 
 const express = require('express');
