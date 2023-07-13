@@ -1,8 +1,3 @@
-// const AT_Score = require("../../models/Admin/Analytics_Threshold/Score.model");
-// const AT_Incentive = require("../../models/Admin/Analytics_Threshold/Incentive.model");
-// const AT_Accident = require("../../models/Admin/Analytics_Threshold/Accident.model");
-// const AT_LB = require("../../models/Admin/Analytics_Threshold/LeadershipBoard.model");
-const AT_Halt = require("../../models/Admin/Analytics_Threshold/Halt.model");
 const AnalyticsThresholds = require("../../models/Admin/AT.model");
 
 const express = require('express');
@@ -100,7 +95,7 @@ AddHalts: savedHalt
 
 exports.AddAnalytics = async (req, res) => {
     try {
-      
+        const{title,customer_id} = req.body;
         const{ brake, tailgating, rash_driving, sleep_alert, over_speed, green_zone } = req.body;
         const{ minimum_distance, minimum_driver_rating } = req.body;
         const{ ttc_difference_percentage } = req.body;
@@ -108,6 +103,8 @@ exports.AddAnalytics = async (req, res) => {
         const{duration} = req.body;
   
       if (
+        !title ||
+        !customer_id ||
         !brake ||
         !tailgating ||
         !rash_driving ||
@@ -124,6 +121,8 @@ exports.AddAnalytics = async (req, res) => {
       }
   
       const new_AT = new AnalyticsThresholds({
+        title:title,
+        customer_id:customer_id,
         newScore:
         {
         brake,
@@ -149,22 +148,7 @@ exports.AddAnalytics = async (req, res) => {
         }
       });
   
-      // const newIncentive = new AnalyticsThresholds({
-      //   minimum_distance,
-      //   minimum_driver_rating,
-      // });
-  
-      // const newAccident = new AnalyticsThresholds({
-      //   ttc_difference_percentage,
-      // });
-  
-      // const newLB = new AnalyticsThresholds({
-      //   total_distance,
-      // });
-  
-      // const newHalt = new AnalyticsThresholds({
-      //   duration,
-      // });
+ 
   
       const [saved_AT] = await Promise.all([
         new_AT.save(),
@@ -186,27 +170,7 @@ exports.AddAnalytics = async (req, res) => {
       const response = {
         code: 200,
         message: "AT Score Generated Successfully",
-        AddScores: {
-          brake: saved_AT.brake,
-          tailgating: saved_AT.tailgating,
-          rash_driving: saved_AT.rash_driving,
-          sleep_alert: saved_AT.sleep_alert,
-          over_speed: saved_AT.over_speed,
-          green_zone: saved_AT.green_zone,
-        },
-        AddIncentives: {
-          minimum_distance: saved_AT.minimum_distance,
-          minimum_driver_rating: saved_AT.minimum_driver_rating,
-        },
-        AddAccidents: {
-          ttc_difference_percentage: saved_AT.ttc_difference_percentage,
-        },
-        AddLBs: {
-          total_distance: saved_AT.total_distance,
-        },
-        AddHalts: {
-          duration: saved_AT.duration,
-        },
+        saved_AT
       };
   
       res.status(200).json(response);
