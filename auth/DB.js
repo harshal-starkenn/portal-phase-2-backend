@@ -6,8 +6,6 @@
 // const PORT = process.env.PORT 
 
 
- 
-
 // // Data-Base Connection Start
 // mongoose
 //     .connect(process.env.MONGODB_URL, {
@@ -19,10 +17,6 @@
 
 
 // //  Data-Base Connection End  
-
-// // Routes
-// //app.use(user);
-// //routes(app);
 
 // // Server Start 
 // app.listen(PORT, () => console.log("Server running on port " + PORT));

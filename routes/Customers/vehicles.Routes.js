@@ -6,12 +6,10 @@ const VehiclesController = require("../../controller/Customers/vehicles.controll
  // Get All Vehicles Data
 VehicleRoutes.get("/getAllVehicle", VehiclesController.getAllVehicles);
 
- // Add/Insert Vehicle By User Id
-//VehicleRoutes.post("/addVehicle/:user_id", VehiclesController.addVehicle);
+// Add/Insert Vehicle By User Id
 VehicleRoutes.post("/addVehicle", VehiclesController.addVehicle);
  
 // Edit/Update Vehicle Data By UserID/ VehicleId
-// VehicleRoutes.put("/editVehicle/:user_id/:vehicle_id", VehiclesController.editVehicle);
 VehicleRoutes.put("/updateVehicle/:userId", VehiclesController.updateVehicle); //  NOT Working
 
  // Delete Vehicle Data By Vehicle Id

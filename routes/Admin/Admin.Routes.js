@@ -10,7 +10,7 @@ AdminRoutes.post("/signup",AdminController.Signup);
 AdminRoutes.post("/login",AdminController.Login);
 
 //Admin Logout Routes
-AdminRoutes.post("/logout",AdminController.Logout); // Not Working
+AdminRoutes.put("/logout/:userId",AdminController.Logout); // Not Working (Check Bug's reports)
 
 
 module.exports = AdminRoutes;

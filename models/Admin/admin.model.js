@@ -16,39 +16,52 @@ const adminSchema = new mongoose.Schema({
     type: String, 
     required: true,  
   },
-  admin_name: {
-    type: String,
-    required: true
-   // unique: true,
-  },
   email: {
     type: String,
     required: true
-    //unique: true,
+    
   },
   password: {
     type: String, 
     required: true,
   },
-  // user_type: {
-  //   type: String,
-  //   required: true,
-  // },
+  user_type: {
+    type: String,
+    required: true,
+  },
+  accessToken: {
+  type: String, 
+  default: null 
+ },
   status: {
     type: String,
    // required: true,
   },
 });
 
-// Define a static method to hash the password
-adminSchema.statics.hashPassword = async function (password) {
-  const saltRounds = 10;
-  return await bcrypt.hash(password, saltRounds);
-};
 
 // Create the Admin model
 const Admin = mongoose.model('Admin', adminSchema);
 
 // Export the Admin model
 module.exports = Admin;
+
+// Hashing Password
+module.exports.hashPassword = async (password) => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+  } catch (error) {
+    throw new Error("Hashing failed", error);
+  }
+};
+
+module.exports.comparePasswords = async (inputPassword, hashedPassword) => {
+  try {
+    return await bcrypt.compare(inputPassword, hashedPassword);
+  } catch (error) {
+    throw new Error("Comparison failed", error);
+  }
+};
+
 

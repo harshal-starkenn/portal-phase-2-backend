@@ -2,10 +2,10 @@ const User  = require("../../models/Admin/adminCustomers");
 const express = require('express');
 const app = express();
 const cookieParser = require("cookie-parser");
+const { generateJwt } = require("../../auth/JWT");
+const storage = require("node-sessionstorage");
 var bodyParser = require('body-parser');
 var moment = require('moment-timezone');
-// var moment = require('moment'); // require
-// moment().format();
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -22,12 +22,13 @@ function isValidateEmail(Vemail) {
   return re.test(String(Vemail).toLowerCase());
 }
 
-//============================================{Add- User} [START]=======================================================//
-exports.userSignup = async (req, res) => {
+
+//=========================================={Add- User} [START]========================================================//
+exports.Signup = async (req, res) => {
     try {
      
   
-      const {first_name, last_name, email, password, confirmPassword } = req.body;
+      const {first_name, last_name, email, password, confirmPassword,user_type } = req.body;
       const { company_name, address, state, city, pincode, phone} = req.body;
       
  
@@ -38,9 +39,6 @@ exports.userSignup = async (req, res) => {
   //--------------------Check Existing Phone---------------------//
       const existingCustomerPhone = await User.findOne({  phone });
         
-
-      // email = email.replace(/\s+/g, '');
-      // email = email.toLowerCase();
 
   if (!isValidateEmail(email)) {
     return res.status(401).send({
@@ -55,11 +53,7 @@ exports.userSignup = async (req, res) => {
 
       if (existingCustomerEmail ) {
         return res.status(500).send('This Email Already Taken ');
-      }
-      // else if ( existingCustomerUserName) {
-      //   return res.status(500).send('This User Name Already Taken');
-      // }
-      else if ( existingCustomerPhone) {
+      } else if ( existingCustomerPhone) {
         return res.status(500).send('This Phone Number Already Taken');
       }
   
@@ -68,22 +62,16 @@ exports.userSignup = async (req, res) => {
         return res.status(400).json({ message: 'FIRST_NAME is required' });
       } else if  (!last_name) { 
         return res.status(400).json({ message: 'LAST_NAME is required' });
-      // } else if  (!full_name) { 
-      //   return res.status(400).json({ message: 'FULL_NAME is required' });
       } else if  (!email) {
         return res.status(400).json({ message: 'EMAIL is required' });
       } else if  (!phone) {
         return res.status(400).json({ message: 'PHONE Numberis required' });
-      // } else if  (!username) {
-      //   return res.status(400).json({ message: 'USER_NAME is required' });
       } else if  (!password) {
         return res.status(400).json({ message: 'PASSWORD is required' });
       } else if  (!confirmPassword) {
+        return res.status(400).json({ message: 'user_type is required' });
+      } else if  (!user_type) {
         return res.status(400).json({ message: 'CONFIRM_PASSWORD is required' });
-      // } else if  (!user_type) {
-      //   return res.status(400).json({ message: 'user_type is required' });
-      // } else if  (!status) {
-      //   return res.status(400).json({ message: 'status is required' });
       }  else if  (!company_name) { 
         return res.status(400).json({ message: 'COMPANY_NAME is required' }); 
       }  else if  (!address) { 
@@ -129,35 +117,21 @@ exports.userSignup = async (req, res) => {
         userId: id,
         first_name,
         last_name,
-        //full_name,
-       // username,
         email,
         password: hashedPassword, 
         confirmPassword: confirmHashPassword,
-        // user_type,
-        // status,
+        user_type,
         company_name,
         address,
         state,
         city,
         pincode,
         phone,
-      //  timestamps: {
+     
         "created_at": currentTimeIST,
          "updated_at": currentTimeIST,
-      // },
+    
       });
-  
-      // const userdetails = new Customer({
-      //   id: userId,
-      //   company_name,
-      //   address,
-      //   state,
-      //   city,
-      //   pincode,
-      //   phone,
-      //   created_at: new Date(),
-      // });
   
   
       const savedUser = await newUser.save();
@@ -170,9 +144,222 @@ exports.userSignup = async (req, res) => {
 };
 //============================================{ADD- User} [END]=========================================================//
 
+//=========================================={Admin Login  Start}=======================================================//
+
+exports.Login = async (req, res) => {
+  try {
+    var { email, password } = req.body;
+
+//====================1. Find if any account with that email exists in DB=====================//
+    var user = await User.findOne({ email: email });
+    await User.findOne({ email: email })
+      .then((data) => {
+        console.log(data, "okkkk");
+      })
+      .catch((err) => {
+        console.log(err, "errrorrrrr");
+      });
+ // NOT FOUND - Throw error //
+    if (!user) {
+      return res.status(402).json({
+        statuscode: 402,
+        status: "Not Found",
+        message: "Wrong Email",
+        data: {},
+      });
+    }
+ //========================2. Throw error if account is not activated===========================//
+//  if (!user.active) {
+//   return res.status(403).json({
+//     statuscode: 403,
+//     status: "Failed",
+//     message: "You must verify your email to activate your account",
+//     data: {},
+//   });
+// }
+//============================All Fileds Are Mandatory================================//
+    if (!email || !password) {
+      return res.status(400).json({
+        statuscode: 400,
+        status: "Failed",
+        message: "Enter All Credentials Mandatory",
+        data: {},
+      });
+    }
+
+//====================Paswword convert into bcrypt===========================//
+
+const isValid = await User.hashPassword(password, user.password);
+console.log("password", password);
+
+if (!isValid) {
+  return res.status(401).json({
+    statuscode: 401,
+    status: "Unauthorized",
+    message: "Invalid  password",
+    data: {},
+  });
+}
+
+//=====================Generate JWT Token==========================//
+    const {error, token } = await generateJwt(user.email, user.userId);
+    user.accessToken = token;
+   // const token = jwt.sign({ email: user.email, userId: user.userId }, 'secretKey');
+   if (error) {
+    return res.status(501).json({
+      statuscode: 501,
+      status: "Error",
+      message: "Couldn't create access token. Please try again later",
+      data: {},
+    });
+  }
+  const currentTimeStamp = new Date().getTime();
+  await user.save();
+  user.accessToken = token;
+ // user.userIP = userIP;
+
+  if (user.blockTimeStamp < currentTimeStamp) {
+    user.userActivity = true
+    await user.save();
+  }
+
+  //storage.setItem("email", user.email);
+
+    return res.status(200).json({
+      statuscode: 200, 
+      status: "OK",
+      message: "User Logged In Successfully",
+      accessToken: token,
+      data: {
+        active:user.active,
+        userId: user.userId,
+        email: user.email,
+        password:user.password,
+        accessToken: user.accessToken
+
+      },
+    });
+  } catch (err) {
+    console.error("Login error", err);
+    return res.status(500).json({
+      statuscode: 500,
+      status: "Error",
+      message: "Couldn't login. Please try again later.",
+      data: {},
+    });
+  }
+};
+exports.Login1 = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user account with the provided email
+    const user = await User.findOne({ email: email });
+
+    // If user not found, return error
+    if (!user) {
+      return res.status(404).json({
+        statuscode: 404,
+        status: "Not Found",
+        message: "Invalid Email",
+        data: {},
+      });
+    }
+
+    // Check if the provided password matches the stored hashed password
+    const isValid = await User.comparePasswords(password, user.password);
+    if (!isValid) {
+      return res.status(401).json({
+        statuscode: 401,
+        status: "Unauthorized",
+        message: "Invalid Password",
+        data: {},
+      });
+    }
+
+    // Generate JWT token
+    const { error, token } = await generateJwt(user.email, user.userId);
+    if (error) {
+      return res.status(500).json({
+        statuscode: 500,
+        status: "Error",
+        message: "Couldn't create access token. Please try again later",
+        data: {},
+      });
+    }
+
+    // Update user's accessToken and save the changes
+    user.accessToken = token;
+    await user.save();
+
+    return res.status(200).json({
+      statuscode: 200,
+      status: "OK",
+      message: "User Logged In Successfully",
+      accessToken: token,
+      data: {
+        active: user.active,
+        userId: user.userId,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Login error", error);
+    return res.status(500).json({
+      statuscode: 500,
+      status: "Error",
+      message: "Couldn't login. Please try again later.",
+      data: {},
+    });
+  }
+};
+
+//=========================================={Admin Login  END}=========================================================//
+
+//=========================================={Admin Logout START========================================================//
+
+exports.Logout = async (req, res) => {
+  try {
+    const { id } = req.decoded;
+    //const { id } = req.decoded;
+   
+    let user = await User.findOne({ userId: id });
+    console.log(id);
+
+    if (!user) {
+      return res.status(404).json({
+        statuscode: 404,
+        status: "Not Found", 
+        message: "User not found",
+        data: {},
+      });
+    }
+
+    user.accessToken = "";
+
+    await user.save();
+
+    return res.status(200).json({
+      statuscode: 200,
+      status: "OK",
+      message: "User logged out successfully",
+      data: {},
+    });
+  } catch (error) {
+    console.error("user-logout-error", error);
+    return res.status(500).json({
+      statuscode: 500,
+      status: "Error",
+      message: error.message,
+      data: {}
+    });
+  }
+};
+//=========================================={Admin Logout END==========================================================//
+
 //============================================{Upadte- User} [START]====================================================//
 
-exports.UpdateUser = async (req, res) => {
+exports.Update = async (req, res) => {
   try {
     const { userId } = req.params;
     console.log(userId);
@@ -190,7 +377,6 @@ exports.UpdateUser = async (req, res) => {
     } = req.body;
 
     const updatedUser = await User.findOneAndUpdate( {userId},
-      //userId,
       {
         first_name,
         last_name,
@@ -218,7 +404,7 @@ exports.UpdateUser = async (req, res) => {
 //============================================{Upadte- User} [END]======================================================//
 
 //============================================{User-Delete} [START]=====================================================//
-exports.DeleteUser = async (req, res) => {
+exports.Delete = async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findOneAndDelete({ userId: userId});
@@ -236,13 +422,11 @@ exports.DeleteUser = async (req, res) => {
 //============================================{User-Delete} [END]=======================================================//
 
 //============================================{Get- User} [START]=======================================================//
-exports.userGet = async (req, res) => {
+exports.Get = async (req, res) => {
     try{
-       // const { user_id } = req.body
         const data = await User.find({});
         totalCount = data.length;
         if (totalCount > 0) {
-        // if(!device){
 
         return res.status(200).json({
             statuscode: 200,
@@ -251,7 +435,7 @@ exports.userGet = async (req, res) => {
             message: 'User Get Successfull',
             data
           });
-        // }
+       
       }
           } catch (err) {
             console.log(err, "error in Vehicle Data")

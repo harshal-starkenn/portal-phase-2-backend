@@ -1,15 +1,10 @@
 const Admin = require("../../models/Admin/admin.model");
-const bcrypt = require("bcrypt");
 const express = require('express');
 const app = express();
 const { generateJwtAdmin } = require("../../auth/JWT");
-// var cookieSession = require('cookie-session');
- const cookieParser = require("cookie-parser");
-// var http = require('http').Server(app);
-// var io = require('socket.io')(http);
+const cookieParser = require("cookie-parser");
 var bodyParser = require('body-parser');
 
-// const path = require("path");
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -23,10 +18,10 @@ const { v4: uuidv4 } = require('uuid');
 //======================={Admin Signup START}======================//
 exports.Signup = async (req, res) => {
   try {
-    const {first_name, last_name, admin_name, email, password, status } = req.body;
+    const {first_name, last_name, user_type, email, password, status } = req.body;
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await Admin.hashPassword(password, 10);
 
     // Generate a new unique UUID
     const userId = uuidv4();
@@ -35,10 +30,9 @@ exports.Signup = async (req, res) => {
       userId,
       first_name,
       last_name,
-      admin_name,
       email,
       password: hashedPassword, 
-     // user_type,
+      user_type,
       status,
     });
 
@@ -52,93 +46,12 @@ exports.Signup = async (req, res) => {
 };
 //======================={Admin Signup END}=======================// 
 
-// exports.Login = async (req, res) => {
-//   try {
-//     //let token=req.cookies.auth;
-//     var { email, password } = req.body;
-
-//     var admin = await Admin.findOne({ email: email });
-
-//     if (!admin) {
-//       return res.status(402).json({
-//         statuscode: 402,
-//         status: "Not Found",
-//         message: "Account Not Found",
-//         data: {},
-//       });
-//     }
-
-//     const isValid = await Admin.hashPassword(password, Admin.password);
-
-//     if (!isValid) {
-//       return res.status(401).json({
-//         statuscode: 401,
-//         status: "Unauthorized",
-//         message: "Invalid credentials",
-//         data: {},
-//       });
-//     }
-//     const { token } = await generateJwtAdmin(admin.email, admin.userId);
-//     admin.accessToken = token;
-//    // const token = jwt.sign({ email: user.email, userId: user.userId }, 'secretKey');
-
-//     return res.status(200).json({ 
-//       statuscode: 200,
-//       status: "OK",
-//       message: "Admin Logged In Successfully",
-//       accessToken: token,
-//       data: {
-//         userId: admin.userId,
-//         email: admin.email,
-//         first_name: admin.first_name,
-//         last_name: admin.last_name,
-
-//       },
-//     });
-//   } catch (err) {
-//     console.error("Login error", err);
-//     return res.status(500).json({
-//       statuscode: 500,
-//       status: "Error",
-//       message: "Couldn't login. Please try again later.",
-//       data: {},
-//     });
-//   }
-// };
-
-// exports.Logout = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     let admin = await User.findOne({ userId: id });
-
-//     admin.accessToken = "";
-
-//     await admin.save();
-
-//     return res.status(200).json({
-//       statuscode: 200,
-//       status: "OK",
-//       message: "Admin Logged out Successfully",
-//       data: {},
-//     });
-//   } catch (error) {
-//     console.error("user-logout-error", error);
-//     return res.status(500).json({
-//       statuscode: 500,
-//       status: "Error",
-//       message: error.message,
-//       data: {}
-//     });
-//   }
-// };
-
 //======================={Admin Login  Start}====================//
 exports.Login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    var { email, password } = req.body;
 
-    const admin = await Admin.findOne({ email: email });
+    var admin = await Admin.findOne({ email: email });
 
     if (!admin) {
       return res.status(402).json({
@@ -149,8 +62,8 @@ exports.Login = async (req, res) => {
       });
     }
 
-    const isValid = await Admin.hashPassword(password, admin.password);
-
+    const isValid = await Admin.comparePasswords(password, admin.password);
+    console.log("password", password);
     if (!isValid) {
       return res.status(401).json({
         statuscode: 401,
@@ -160,10 +73,28 @@ exports.Login = async (req, res) => {
       });
     }
 
-    const { token } = await generateJwtAdmin(admin.email, admin.userId);
+//=====================Generate JWT Token==========================//
+    const { error,token } = await generateJwtAdmin(admin.email, admin.userId);
     admin.accessToken = token;
 
-   // res.cookie('auth', token, { httpOnly: true }); // Set the 'auth' cookie
+    if (error) {
+      return res.status(501).json({
+        statuscode: 501,
+        status: "Error",
+        message: "Couldn't create access token. Please try again later",
+        data: {},
+      });
+    }
+
+    const currentTimeStamp = new Date().getTime();
+    await admin.save();
+    admin.accessToken = token;
+   // user.userIP = userIP;
+  
+    if (admin.blockTimeStamp < currentTimeStamp) {
+      admin.userActivity = true
+      await admin.save();
+    }
 
     return res.status(200).json({ 
       statuscode: 200,
@@ -175,6 +106,7 @@ exports.Login = async (req, res) => {
         email: admin.email,
         first_name: admin.first_name,
         last_name: admin.last_name,
+        accessToken: admin.accessToken
       },
     });
   } catch (err) {
@@ -190,43 +122,43 @@ exports.Login = async (req, res) => {
 //======================={Admin Login  END}======================//
 
 //======================={Admin Logout START=====================//
+
 exports.Logout = async (req, res) => {
   try {
-    req.user.tokens = req.user.tokens.filter(token => {
-        return token.token != req.token;
+    const { userId } = req.body;
+
+    const admin = await Admin.findOneAndUpdate({userId:userId} );
+
+    if (!admin) {
+      return res.status(404).json({
+        statuscode: 404,
+        status: "Not Found",
+        message: "Admin not found",
+        data: {},
+      });
+    }
+
+    admin.accessToken = "";
+
+    await admin.save();
+
+    return res.status(200).json({
+      statuscode: 200,
+      status: "OK",
+      message: "Admin logged out successfully",
+      data: {},
     });
-    await req.user.save();
-    res.json({ message: "User disconnected" });
-} catch (error) {
-    res.status(500).send(error);
-}
-}
+  } catch (error) {
+    console.error("Admin-logout-error", error);
+    return res.status(500).json({
+      statuscode: 500,
+      status: "Error",
+      message: error.message,
+      data: {},
+    });
+  }
+};
+
 //======================={Admin Logout END=======================//
-// exports.Logout = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     let admin = await User.findOne({ userId: id });
-
-//     admin.accessToken = "";
-
-//     await admin.save();
-
-//     return res.status(200).json({
-//       statuscode: 200,
-//       status: "OK",
-//       message: "Admin Logged out Successfully",
-//       data: {},
-//     });
-//   } catch (error) {
-//     console.error("user-logout-error", error);
-//     return res.status(500).json({
-//       statuscode: 500,
-//       status: "Error",
-//       message: error.message,
-//       data: {}
-//     });
-//   }
-// };
 
 

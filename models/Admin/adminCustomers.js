@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   email:               {type: String,                required: true  },
   password:            {type: String,                required: true, },
   confirmPassword:     {type: String,                required: true, },
- // user_type:           {type: String,                required: true, },
+  user_type:           {type: String,                required: true, },
   status:              {type: String,                default: true },
   company_name:        {type: String,                required: true, },
   address:             {type: String,                required: true, },
@@ -79,7 +79,8 @@ module.exports = User;
 //     throw new Error("Hashing failed", error);
 //   }
 // };
-module.exports.hashPassword = async (password, confirmPassword) => {
+
+module.exports.hashPassword = async (password,confirmPassword) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const concatenatedPassword = password + confirmPassword;
@@ -88,28 +89,10 @@ module.exports.hashPassword = async (password, confirmPassword) => {
     throw new Error("Hashing failed", error);
   }
 };
-// module.exports.comparePasswords = async (inputPassword, hashedPassword) => {
-//   try {
-//     console.log(inputPassword);
-//     console.log(hashedPassword);
-//    // const saltRounds = 10;
-//     const match = await bcrypt.compare(inputPassword, hashedPassword);
-//     return match;
-//   } catch (error) {
-//     console.error("Comparison failed", error);
-//     throw new Error("Failed to compare passwords");
-//   }
-// };
 module.exports.comparePasswords = async (inputPassword, hashedPassword) => {
   try {
-    console.log(inputPassword);
-    console.log(hashedPassword);
-   // const saltRounds = 12 ;
-    const match = await bcrypt.hash(inputPassword, hashedPassword);
-    return match;
+    return await bcrypt.compare(inputPassword, hashedPassword);
   } catch (error) {
-    console.error("Comparison failed", error);
-    throw new Error("Failed to compare passwords");
+    throw new Error("Comparison failed", error);
   }
 };
-
