@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
-//const moment = require('moment-timezone');
 const bcrypt = require('bcrypt');
 
 // Define the schema for the User model
-//const currentTimeIST = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 const userSchema = new mongoose.Schema({
   userId:              {type: String,  unique: true, required: true  },
   first_name:          {type: String,                required: true  },
@@ -55,9 +53,6 @@ const userSchema = new mongoose.Schema({
 });
 
 
-
-//console.log(currentTimeIST);
-
 // Create the User model
 const   User = mongoose.model('Users', userSchema);
 
@@ -65,26 +60,11 @@ const   User = mongoose.model('Users', userSchema);
 module.exports = User;
 
 // Define a static method to hash the password
-// userSchema.statics.hashPassword = async function (password) {
-//   const saltRounds = 10;
-//   return await bcrypt.hash(password, saltRounds);
-// };
-
-
-// module.exports.hashPassword = async (password,confirmPassword) => {
-//   try {
-//     const salt = await bcrypt.genSalt(10);
-//     return await bcrypt.hash(password, confirmPassword, salt);
-//   } catch (error) {
-//     throw new Error("Hashing failed", error);
-//   }
-// };
-
-module.exports.hashPassword = async (password,confirmPassword) => {
+module.exports.hashPassword = async (password) => {
   try {
     const salt = await bcrypt.genSalt(10);
-    const concatenatedPassword = password + confirmPassword;
-    return await bcrypt.hash(concatenatedPassword, salt);
+    //const concatenatedPassword = password + confirmPassword;
+    return await bcrypt.hash(password, salt);
   } catch (error) {
     throw new Error("Hashing failed", error);
   }

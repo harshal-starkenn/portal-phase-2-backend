@@ -1,5 +1,7 @@
 const Devices = require("../../models/Admin/device.model");
+const User = require("../../models/Admin/adminCustomers");
 const express = require('express');
+var moment = require('moment-timezone');
 app = express();
 
 const bodyParser = require("body-parser");
@@ -24,13 +26,17 @@ exports.AddDevice = async (req,res) => {
           }  else if  (!status) {
             return res.status(400).json({ message: 'status is required' });
           } 
-
+          var createdAt = new Date()
+          var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
           const newDevice = new Devices({ 
             device_id,
             device_type,
             customer_id,
             sim_number,
-            status
+            status,
+         "created_at": currentTimeIST,
+         "updated_at": currentTimeIST,
+
 
           });
           const savedDevice = await newDevice.save();
@@ -45,8 +51,8 @@ exports.AddDevice = async (req,res) => {
 //========================{Get Device By ID}===========================//
 exports.getDeviceById = async (req, res) => {
     try {
-      const { id } = req.params;
-      const device = await Devices.findById({_id : id});
+      const { device_id } = req.params;
+      const device = await Devices.findOne({device_id : device_id});
   
       if (!device) {
         return res.status(404).json({
@@ -79,7 +85,7 @@ exports.getDeviceById = async (req, res) => {
 //========================{Get All Devices (totalCount)}===============//
 exports.GetAllDevices = async (req, res) => {
     try {
-        let device = await Devices.find()
+        let device = await Devices.find({})
         totalCount = device.length;
         if(!device){
             return res.status(400).json({
@@ -127,6 +133,8 @@ exports.UpdateDevice = async (req, res) => {
       status,
     } = req.body;
 
+    var createdAt = new Date()
+    var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
     const updatedDevice = await Devices.findOneAndUpdate(
       { device_id },
       {
@@ -134,6 +142,7 @@ exports.UpdateDevice = async (req, res) => {
         customer_id,
         sim_number,
         status,
+        "updated_at": currentTimeIST,
       },
       { new: true }
     );
@@ -148,7 +157,6 @@ exports.UpdateDevice = async (req, res) => {
     res.status(500).json({ error: 'Failed to update Device' });
   }
 };
-
 
 //========================={Delete Devices}============================//
 exports.DeleteDevice = async (req, res) => {
@@ -166,38 +174,7 @@ exports.DeleteDevice = async (req, res) => {
   }
 };
 
-//=========================={Get IOT Devices}========(Not USE)==================//
-// exports.getIOTDevice = async (req, res) => {
-//   try {
-//     const { device_type } = req.params;
-
-//     const iotData = await Devices.find({
-     
-
-//       device_type,
-//       iot: { $exists: true }
-//     });
-//     totalCount = iotData.length;
-// if (totalCount > 0) {
-//     res.status(200).json({
-//       statusCode: 200,
-//       status: 'OK',
-//       TotalCount: totalCount,
-//       message: 'IoT Data',
-//       data: iotData
-//     });
-//   }
-//   } catch (err) {
-//     res.status(500).json({
-//       statusCode: 500,
-//       status: 'Internal Server Error',
-//       message: 'An error occurred while retrieving IoT data',
-//       error: err.message
-//     });
-//   }
-//   };
-
-  //======================={GET devices by device type}=================//
+//======================={GET devices by device type}=================//
 exports.getDevicesByType = async (req, res) => {
   const { deviceType } = req.params;
 
@@ -231,97 +208,24 @@ exports.getDevicesByType = async (req, res) => {
   }
 };
 
+//======================={GET All User data  }=======================//
+exports.GetUser = async (req, res) => {
+  try{
+      const data = await User.find({});
+    //  totalCount = data.length;
+     // if (totalCount > 0) {
 
-// exports.globalSearch = async (req, res) => {
-//   const { query } = req.body;
-
-//   try {
-//     const searchResults = await performGlobalSearch(query);
-//     res.status(200).json({ results: searchResults });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ message: 'Failed to perform search' });
-//   }
-// };
-
-// const performGlobalSearch = async (query) => {
-//   const { device_id, device_type, customer_id, sim_number, status } = query;
-
-//   try {
-//     // Build the search query based on the provided parameters
-//     const searchQuery = {};
-//     if (device_id) {
-//       searchQuery.device_id = { $regex: device_id, $options: 'i' };
-//     }
-//     if (device_type) {
-//       searchQuery.device_type = { $regex: device_type, $options: 'i' };
-//     }
-//     if (customer_id) {
-//       searchQuery.customer_id = { $regex: customer_id, $options: 'i' };
-//     }
-//     if (sim_number) {
-//       searchQuery.sim_number = { $regex: sim_number, $options: 'i' };
-//     }
-//     if (status) {
-//       searchQuery.status = { $regex: status, $options: 'i' };
-//     }
-
-//     // Perform the search using a MongoDB model (e.g., Devices model)
-//     const searchResults = await Devices.find(searchQuery);
-
-//     return searchResults;
-//   } catch (error) {
-//     console.log(error);
-//     throw new Error('Failed to perform search');
-//   }
-// };
-
-// exports.GetAllDevices = async (req, res) => {
-//   try {
-//     const searchQuery = req.query.q; // Get the search query from request query parameters
-//     let devices;
-//     let totalCount;
-
-//     if (searchQuery) {
-//       // If search query is provided, perform the search operation
-//       devices = await Devices.find({
-//         $or: [
-//           { $text: { $search: searchQuery } }, // Perform text search on all fields
-//         ],
-//       });
-
-//       totalCount = devices.length;
-//     } else {
-//       // If no search query is provided, fetch all devices
-//       devices = await Devices.find();
-//       totalCount = devices.length;
-//     }
-
-//     if (totalCount > 0) {
-//       return res.status(200).json({
-//         statuscode: 200,
-//         status: "OK",
-//         TotalCount: totalCount,
-//         message: "All Devices Data Get Successful",
-//         data: {
-//           devices,
-//         },
-//       });
-//     } else {
-//       return res.status(404).json({
-//         statuscode: 404,
-//         status: "Not Found",
-//         message: "Devices data Not Found",
-//         data: {},
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Failed to Get Devices", error);
-//     return res.status(500).json({
-//       statuscode: 500,
-//       status: "Error",
-//       message: error.message,
-//       data: {},
-//     });
-//   }
-// };
+      return res.status(200).json({
+          statuscode: 200,
+          status: 'OK',
+         // TotalCount: totalCount,
+          message: 'User Get Successfull',
+          data
+        });
+     
+    //}
+        } catch (err) {
+          console.log(err, "error in User Data")
+        }
+  
+};

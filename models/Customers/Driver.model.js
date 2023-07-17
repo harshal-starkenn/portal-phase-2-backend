@@ -12,7 +12,8 @@ const driverSchema = mongoose.Schema({
   mobile: { type: String, required: true },
   DOB: { type: String, required: true },
   rfid: { type: String, required: true },
-  status: { type: String, required: true },
+ // status: { type: String, required: true },
+ status:              {type: String,                default: true },
   createdAt: {
     type: Date,
     default: Date.now(),

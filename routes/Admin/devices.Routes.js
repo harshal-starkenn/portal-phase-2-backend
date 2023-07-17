@@ -15,17 +15,14 @@ DevicesRoutes.put("/update-Device/:device_id", DevicesController.UpdateDevice);
 // Delete Device Data By Id
 DevicesRoutes.delete("/delete-Device/:id", DevicesController.DeleteDevice);
 
-// // Get User Devices Data By User Id
-// DevicesRoutes.get("/get-User-Device/:user_id", DevicesController.GetDevices);
+// Get User Devices Data By User Id
+DevicesRoutes.get("/get-User", DevicesController.GetUser);
 
-// Get Device data
-DevicesRoutes.get("/get-Device/:id", DevicesController.getDeviceById);
+// Get Device data By Device Id
+DevicesRoutes.get("/get-Device/:device_id", DevicesController.getDeviceById);
 
-// Get IOT Devices Data (Not Use)
-//DevicesRoutes.get("/get-iot-devices",DevicesController.getIOTDevice);
-
+// Get Device Data By Device Type
 DevicesRoutes.get('/devices/:deviceType', DevicesController.getDevicesByType);
 
-//DevicesRoutes.get("/get-globalSearch",DevicesController.globalSearch);
 
 module.exports = DevicesRoutes;

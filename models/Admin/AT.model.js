@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const ScoreSchema = new mongoose.Schema({
+const AT_Schema = new mongoose.Schema({
 
 title:       {type: String,  required: true},
 customer_id: {type: String,  required: true},
@@ -25,11 +25,11 @@ total_distance:   {type: Number,  required: true},
     newHalt:{
 duration:   {type: Number,  required: true},
 
-    }
+    },
+    status:              {type: String,                default: true },
+}) 
 
-})
+const AnalyticsThresholds = mongoose.model('AnalyticsThreshold_Admin', AT_Schema);
 
-const ScoreAnalytics = mongoose.model('Score_Analytics_Admin', ScoreSchema);
-
-module.exports = ScoreAnalytics;
+module.exports = AnalyticsThresholds;
 

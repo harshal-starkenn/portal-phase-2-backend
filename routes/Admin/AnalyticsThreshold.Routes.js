@@ -6,4 +6,7 @@ const ATController = require("../../controller/Admin/AnalyticsThreshold.controll
 // Analytics Threshold Routes //
 ATRoutes.post("/AddAnalytics",ATController.AddAnalytics);
 
+// Get Customers 
+ATRoutes.get("/GetCustomers-AT",ATController.GetCustomers_AT);
+
 module.exports = ATRoutes;

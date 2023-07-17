@@ -60,7 +60,7 @@ exports.AddContacts = async (req,res) => {
 exports.getContactsByEmail = async (req, res) => {
     try {
       const { Email } = req.params;
-      const contacts = await Contacts.findOne({Email : Email});
+      const contacts = await Contacts.findOne({Email : Email},{status: false});
   
       if (!contacts) {
         return res.status(404).json({
@@ -91,52 +91,6 @@ exports.getContactsByEmail = async (req, res) => {
 };
 
 //=========================={Update Contacts}=====================//
-// exports.UpdateContacts = async (req, res) => {
-//     const { field, value } = req.body;
-//     const { Email } = req.params;
-
-//     if (!field || !value) {
-//         return res.status(400).json({ error: 'Missing required fields' });
-//       }
-
-//       let updateField;
-//       switch (field) {
-//         case 'Name':
-//           updateField = 'Name';
-//           break;
-//         case 'Email':
-//           updateField = 'Email';
-//           break;
-//         case 'Contact_Number':
-//           updateField = 'Contact_Number';
-//           break;
-//         case 'Gender':
-//           updateField = 'Gender';
-//           break;
-//         default:
-//           return res.status(400).json({ error: 'Invalid field' });
-//       }
-
-//       try {
-//         const UpdateContacts = await Contacts.findOneAndUpdate(
-
-//             {Email : Email},
-//             { $set: { [updateField]: value } },
-      
-//             { new: true },
-//         );
-
-//         if (!UpdateContacts) {
-//       return res.status(404).json({ error: 'Conatcts not found' });
-//     }
-
-//     res.status(200).json({ message: 'Contacts updated successfully', UpdateContacts });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ error: 'Failed to update Contacts' });
-//   }
-// };
-
 exports.UpdateContacts = async (req, res) => {
   try {
     const { id } = req.params;
@@ -171,12 +125,11 @@ exports.UpdateContacts = async (req, res) => {
   }
 };
 
-
 //=========================={Delete Contacts}======================//
 exports.DeleteContacts = async (req, res) => {
     try {
         const { Email } = req.params;
-        const contacts = await Contacts.findOneAndDelete({ Email: Email});
+        const contacts = await Contacts.findOneAndUpdate({ Email: Email},{status: false});
 
         if(!contacts) {
             return res.status(404).json({ error: "Contacts Not Found"});

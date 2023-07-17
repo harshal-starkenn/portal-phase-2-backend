@@ -8,6 +8,7 @@ const RFIDSchema = new mongoose.Schema({
     Age:{type: String,  required: true },
     Contact_Number:{type: String,  required: true },
     Gender:{type: String,  required: true },
+    status:              {type: String,                default: true },
     //status:{type: String, required: true },
 });
 
