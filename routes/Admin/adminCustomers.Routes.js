@@ -1,18 +1,25 @@
 const express = require("express");
-const UserRoutes = express.Router();
-const UserController = require("../../controller/Admin/adminCustomers");
+const AdminRoutes = express.Router();
+const AdminController = require("../../controller/Admin/adminCustomers");
+const { validateToken } = require("../../auth/validateToken");
 
 
 // SignUp user(Insert Data) Routes
-UserRoutes.post("/UserSignup",UserController.userSignup);
+AdminRoutes.post("/Signup",AdminController.Signup);
+
+// Login User Routes
+AdminRoutes.post("/Login",AdminController.Login);
+
+// Logout User Routes
+AdminRoutes.get("/Logout",validateToken,AdminController.Logout);
 
 // Get User Routes
-UserRoutes.get("/GetUser",UserController.userGet);
+AdminRoutes.get("/Get",AdminController.Get);
 
 // Update User Routes
-UserRoutes.put("/updateUser/:userId",UserController.UpdateUser);
+AdminRoutes.put("/update/:userId",AdminController.Update);
 
 // Delete User Routes
-UserRoutes.delete("/deleteUser/:userId",UserController.DeleteUser);
+AdminRoutes.delete("/delete/:userId",AdminController.Delete);
 
-module.exports = UserRoutes;
+module.exports = AdminRoutes;

@@ -7,101 +7,83 @@ const cors = require("cors");
 var bodyParser = require('body-parser');
 const PORT = process.env.PORT 
 
-//const getMqttData = require("./controller/tripMqtt.controller")
 
 app.use(express.json());
 app.use(cors());
-//getMqttData();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
-//Middlewares
+//=========================={Middlewares-Router-Connection}================================//
 
-const UserSignupRouter = require("./routes/Admin/adminCustomers.Routes")
-const UserGetRouter = require("./routes/Admin/adminCustomers.Routes") 
-const UserUpdateRouter = require("./routes/Admin/adminCustomers.Routes");
-const UserDeleteRouter = require("./routes/Admin/adminCustomers.Routes")
-//const UserGetGlobelRouter = require("./routes/Admin/devices.Routes")
+//-----------------{Admin}-----------------------//
+const AdminRouter = require("./routes/Admin/Admin.Routes")
 
-const SignRouter = require("./routes/Customers/User.Routes"); 
-const LoginRouter = require("./routes/Customers/User.Routes");
-const ActivateRouter = require("./routes/Customers/User.Routes");
-const ForgotPasswordRouter = require("./routes/Customers/User.Routes");
-const ResetPasswordRouter = require("./routes/Customers/User.Routes");
-const LogoutRouter = require("./routes/Customers/User.Routes"); // Not Working
-const UpdateRouter = require("./routes/Customers/User.Routes");
-const DeleteRouter = require("./routes/Customers/User.Routes");
-const GetRouter = require("./routes/Customers/User.Routes");
-const AdminSignupRouter = require("./routes/Admin/Admin.Routes");
-const AdminLoginRouter = require("./routes/Admin/Admin.Routes");
-const AdminLogoutRouter = require("./routes/Admin/Admin.Routes"); // Not Working 
-// const CompletedTripRouter = require("./routes/completedTrip.Routes");
-const VehiclesRouter = require("./routes/Customers/vehicles.Routes");
+//-----------------{Admin-Customer}--------------//
+const AdminCustomerRouter = require("./routes/Admin/adminCustomers.Routes");
+
+//-----------------{Admin-Device}----------------//
 const DevicesRouter = require("./routes/Admin/devices.Routes");
-const DriverRouter  = require("./routes/Customers/driver.Routes");
-const RFIDRouter = require("./routes/Customers/RFID.Routes");
-const ContactRouter = require("./routes/Customers/contacts.Routes");
-// const OngoingTripRouter = require("./routes/ongoingTrips.Routes");
-//const CustomerRouter = require("./routes/customer.Routes");
 
-//===========Driver-Reports==============//
-const ReportsRouter = require("./routes/Customers/reports.Routes");
-
-//===========Analytics-ThresHold=========//
+//-----------------{Admin-AnalyticsThreshold}----//
 const ATRouter = require("./routes/Admin/AnalyticsThreshold.Routes");
 
-//  const UserRouter = require("./routes/User.Routes");
-//  const AdminRouter = require("./routes/Admin.Routes");
-//  const DevicesRouter = require("./routes/devices.Routes");
-//  const VehiclesRouter = require("./routes/vehicles.Routes");
-//  const OngoingTripRouter = require("./routes/ongoingTrips.Routes");
+//-----------------{Customer}--------------------//
+const Customers = require("./routes/Customers/User.Routes");
 
-// app.use("/user",UserRouter);
-// app.use("/admin",AdminRouter);
-// app.use("/device",DevicesRouter);
-// app.use("/vehicle",VehiclesRouter);
+//-----------------{Customers-Vehicels}----------//
+const VehiclesRouter = require("./routes/Customers/vehicles.Routes");
+
+//-----------------{Customers-Drivers}-----------//
+const DriverRouter  = require("./routes/Customers/driver.Routes");
+
+//-----------------{Customers-Driver-RFID}-------//
+const RFIDRouter = require("./routes/Customers/RFID.Routes");
+
+//-----------------{Customers-Contacts}----------//
+const ContactRouter = require("./routes/Customers/contacts.Routes");
+
+//-----------------{Customers-Reports}-----------//
+const ReportsRouter = require("./routes/Customers/reports.Routes");
 
 
 
-// Middlewares
-app.use("/api/Signup",UserSignupRouter);
-app.use("/api/Get",UserGetRouter);
-app.use("/api/Update", UserUpdateRouter);
-app.use("/api/UserDelete", UserDeleteRouter);
-//app.use("/api/globel",UserGetGlobelRouter);
-app.use("/api/Signup", SignRouter);
-app.use("/api/Login", LoginRouter);
-app.use("/api/Activate", ActivateRouter);
-app.use("/api/ForgotPassword", ForgotPasswordRouter);
-app.use("/api/ResetPassword", ResetPasswordRouter);
-//*****************************Update the marge all router api lines on single****************************************
-app.use("/api/Logout", LogoutRouter); // Not Working
-app.use("/api/UpdateUser", UpdateRouter);
-app.use("/api/Delete", DeleteRouter);
-app.use("/api/Get", GetRouter);
-app.use("/api/Adminsignup", AdminSignupRouter);
-app.use("/api/Adminlogin", AdminLoginRouter);
-app.use("/api/Adminlogout", AdminLogoutRouter); // Not Working
-// app.use("/api/CompletedTrip", CompletedTripRouter);
- app.use("/api/Vehicles", VehiclesRouter);
- app.use("/api/Devices", DevicesRouter);
- app.use("/api/Drivers", DriverRouter);
- app.use("/api/DriverRFID", RFIDRouter);
- app.use("/api/addContacts", ContactRouter);
+//==================================={Middlewares--URL/Router-Connection}===============================//
 
-// app.use("/api/OngoingTrip", OngoingTripRouter);
-//app.use("/api/Customers", CustomerRouter)
 
- //================{Reports}====================//
- app.use("/api/Reports", ReportsRouter);
- //================{Analytics-Threshold}=============-//
- app.use("/api/AnalyticsThreshold", ATRouter);
+//------------------------{Admin}-----------------------------//
+app.use("/api/Admin/remove",AdminRouter);
 
- 
+//----------------------{Admin-Customer}-------------------//
+app.use("/api/Admin",AdminCustomerRouter);
 
-// Data-Base Connection Start
+//----------------------{Admin-Device}---------------------//
+app.use("/api/Admin/Devices", DevicesRouter);
+
+//----------------------{Admin-Analytics-ThresHold}--------//
+app.use("/api/Admin/AnalyticsThreshold", ATRouter);
+
+//----------------------{Customer}-------------------------//
+app.use("/api/Customers",Customers);
+
+//----------------------{Customer-Vehicles}----------------//
+app.use("/api/Customers/Vehicles", VehiclesRouter);
+
+//----------------------{Customers-Drivers}----------------//
+app.use("/api/Customers/Drivers", DriverRouter);
+
+//----------------------{Customers-Driver-RFID}------------//
+app.use("/api/Customers/Drivers/DriverRFID", RFIDRouter);
+
+//----------------------{Customers-Contacts}---------------//
+app.use("/api/Customers/Contacts", ContactRouter);
+
+//----------------------{Customers-Reports}----------------//
+app.use("/api/Customers/Reports", ReportsRouter);
+
+
+//---------------------------Data-Base Connection Start----------------------------//
 mongoose
     .connect(process.env.MONGODB_URL, {
         useNewUrlParser: true,
@@ -111,11 +93,8 @@ mongoose
     .catch((err) => console.error(err));
 
 
-//  Data-Base Connection End  
+//--------------------------Data-Base Connection End--------------------------------// 
 
-// Routes
-//app.use(user);
-//routes(app);
 
-// Server Start 
+//--------------------------Server Start-------------------------------------------//
 app.listen(PORT, () => console.log("Server running on port " + PORT));

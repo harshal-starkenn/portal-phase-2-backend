@@ -226,7 +226,6 @@ if (!isValid) {
 
   if (user.blockTimeStamp < currentTimeStamp) {
     user.userActivity = true
-    //user.wrongSecondPassword = 0;
     await user.save();
   }
 
@@ -241,7 +240,6 @@ if (!isValid) {
         active:user.active,
         userId: user.userId,
         email: user.email,
-       // full_name: user.full_name,
         password:user.password
 
       },
