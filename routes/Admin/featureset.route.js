@@ -4,33 +4,56 @@ const {
   featuresetAdd,
   featuresetEdit,
   featuresetDelete,
-  featuresetAssignOrganization,
-  featuresetUnassignOrganization,
+  featuresetAssignCustomer,
+  featuresetUnassignCustomer,
   featuresetDetailsOfCustomer,
+  featuresetCustomerAssignList,
+  featuresetCustomerNotAssignList,
 } = require("../../controller/Admin/featureset.controller");
 const featuresetRouter = express.Router();
 
+//list the featuresets
 featuresetRouter.get("/featureset-list", featuresetList);
 
+//add featureset
 featuresetRouter.post("/featureset-add", featuresetAdd);
 
+//edit featureset
 featuresetRouter.put("/featureset-edit/:featureSetId", featuresetEdit);
 
+//delete featureset
 featuresetRouter.put("/featureset-delete/:featureSetId", featuresetDelete);
 
+//assign featureset to customer
 featuresetRouter.put(
-  "/featureset-assign-organization/:featureSetId",
-  featuresetAssignOrganization
+  "/featureset-assign-customer/:featureSetId",
+  featuresetAssignCustomer
 );
 
+//unassign featureset
 featuresetRouter.put(
-  "/featureset-unassign-organization/:featureSetId",
-  featuresetUnassignOrganization
+  "/featureset-unassign-customer/:featureSetId",
+  featuresetUnassignCustomer
 );
+
+//get featureset of particular customer
+featuresetRouter.get(
+  "/featureset-get-customer/:userId",
+  featuresetDetailsOfCustomer
+);
+
+//get list of customers assign to particular featureset
 
 featuresetRouter.get(
-  "/featureset-get-organization/:userId",
-  featuresetDetailsOfCustomer
+  "/featureset-assign-customerlist/:featureSetId",
+  featuresetCustomerAssignList
+);
+
+//get list of customers which are not assign to particular featureset
+
+featuresetRouter.get(
+  "/featureset-not-assign-customerlist/:featureSetId",
+  featuresetCustomerNotAssignList
 );
 
 module.exports = { featuresetRouter };
