@@ -17,436 +17,247 @@ const featuresetSchema = mongoose.Schema({
       required: true,
     },
   ],
-  systemType: {
-    offlineMode: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    onlineMode: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    version1: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    version: {
-      type: String,
-    },
+  mode: {
+    type: String,
   },
-  collisionAvoidanceSystem: {
-    disable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    enable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    activationSpeed: {
-      type: Number,
-      default: 2,
-    },
-    alarmThreshold: {
-      type: Number,
-      default: 0.5,
-    },
-    brakeThreshold: {
-      type: Number,
-      default: 40,
-    },
-    brakeSpeed: {
-      type: String,
-      default: "No",
-    },
-    detectStationaryObject: {
-      type: String,
-      default: "No",
-    },
-    allowCompleteBrake: {
-      type: String,
-      default: "No",
-    },
-    detectOncomingObstacle: {
-      type: String,
-      default: "Normal",
-    },
-    safetyMode: {
-      type: Number,
-      default: 350,
-    },
-    ttcThreshold: {
-      type: Number,
-      default: 1000,
-    },
-    brakeOnDuration: {
-      type: Number,
-      default: 1000,
-    },
-    brakeOffDuration: {
-      type: Number,
-      default: 1000,
-    },
+  CASMode: {
+    type: String,
   },
-  sleepAlert: {
-    disable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    enable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    preWarning: {
-      type: Number,
-      default: 5,
-    },
-    sleepAlertInterval: {
-      type: Number,
-      default: 40,
-    },
-    activationSpeed: {
-      type: Number,
-      default: 23,
-    },
-    startTime: {
-      type: Number,
-      default: 6,
-    },
-    stopTime: {
-      type: String,
-      default: "No",
-    },
-    braking: {
-      type: Number,
-      default: 10,
-    },
-    brakeActivateTime: {
-      type: Number,
-    },
+
+  activationSpeed: {
+    type: String,
   },
-  driverEval: {
-    disable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    enable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    maxLaneChangeThreshold: {
-      type: Number,
-      default: 0.35,
-    },
-    minLaneChangeThreshold: {
-      type: Number,
-      default: -0.35,
-    },
-    maxHarshAccelerationThreshold: {
-      type: Number,
-      default: -0.4,
-    },
-    minHarshAccelerationThreshold: {
-      type: Number,
-      default: -0.4,
-    },
-    suddenBrakingThreshold: {
-      type: Number,
-      default: 0.5,
-    },
-    maxSpeedBumpThreshold: {
-      type: Number,
-      default: -0.5,
-    },
-    minSpeedBumpThreshold: {
-      type: Number,
-    },
+  alarmThreshold: {
+    type: String,
   },
-  speedGovernor: {
-    disable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    enable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    speedLimit: {
-      type: Number,
-      default: 100,
-    },
+  brakeThreshold: {
+    type: String,
   },
-  cruise: {
-    disable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    enable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    activationSpeed: {
-      type: Number,
-      default: 40,
-    },
-    vehicleType: {
-      type: String,
-    },
+  brakeSpeed: {
+    type: String,
   },
-  obd: {
-    disable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    enable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    protocolType: {
-      type: String,
-      enum: ["SAE J1939"],
-    },
+  detectStationaryObject: {
+    type: Number,
   },
-  tpms: {
-    disable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
-    enable: {
-      type: String,
-      enum: ["Disable", "Enable"],
-      default: "Disable",
-    },
+  allowCompleteBrake: {
+    type: Number,
   },
-  vehicleSettings: {
-    sensor: {
-      acceleratorType: {
-        type: String,
-      },
-      cylinder: {
-        type: String,
-      },
-      brakeType: {
-        type: String,
-      },
-    },
-    laserSensor: {
-      disable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      enable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-    },
-    rfSensor: {
-      disable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      enable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      rfAngle: {
-        type: Number,
-        default: 0,
-      },
-      reserved1: {
-        type: Number,
-        default: 0,
-      },
-      reserved2: {
-        type: Number,
-        default: 0,
-      },
-      reserved3: {
-        type: Number,
-        default: 0,
-      },
-    },
-    speedSettings: {
-      speedWire: {
-        type: String,
-      },
-      speedSource: {
-        type: String,
-      },
-      slope: {
-        type: Number,
-        default: 4.5,
-      },
-      offset: {
-        type: Number,
-        default: 0.5,
-      },
-    },
-    shutdownDelay: {
-      delay: {
-        type: Number,
-        default: 30,
-      },
-    },
-    rfName: {
-      disable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      enable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-    },
-    timeBasedErrors: {
-      noAlarm: {
-        type: Number,
-        default: 30,
-      },
-      speed: {
-        type: Number,
-        default: 30,
-      },
-      accelerationBypass: {
-        type: Number,
-        default: 10,
-      },
-    },
-    speedBasedErrors: {
-      rfSensorAbsent: {
-        type: Number,
-        default: 60,
-      },
-      gyroscopeAbsent: {
-        type: Number,
-        default: 60,
-      },
-      hmiAbsent: {
-        type: Number,
-        default: 60,
-      },
-      timeNotSet: {
-        type: Number,
-        default: 60,
-      },
-      accelerationError: {
-        type: Number,
-        default: 60,
-      },
-      brakeError: {
-        type: Number,
-        default: 60,
-      },
-      tpmsError: {
-        type: Number,
-        default: 60,
-      },
-      simCardAbsent: {
-        type: Number,
-        default: 60,
-      },
-      lowBattery: {
-        type: Number,
-        default: 60,
-      },
-      tripNotStarted: {
-        type: Number,
-        default: 60,
-      },
-      bluetoothConnAbsent: {
-        type: Number,
-        default: 60,
-      },
-      obdAbsent: {
-        type: Number,
-        default: 60,
-      },
-      noAlarm: {
-        type: Number,
-        default: 60,
-      },
-      laserSensorAbsent: {
-        type: Number,
-        default: 60,
-      },
-      rfidAbsent: {
-        type: Number,
-        default: 60,
-      },
-      iotAbsent: {
-        type: Number,
-        default: 60,
-      },
-    },
-    firmwareOtaUpdate: {
-      notAvailable: {
-        type: String,
-        default: "Not Available",
-      },
-      available: {
-        type: String,
-        default: "Available",
-      },
-      reserved1: {
-        type: Number,
-        default: 0,
-      },
-    },
-    alcoholDetection: {
-      disable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      enable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      reserved1: {
-        type: Number,
-        default: 0,
-      },
-    },
-    driverDrowsiness: {
-      disable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      enable: {
-        type: String,
-        enum: ["Disable", "Enable"],
-        default: "Disable",
-      },
-      reserved1: {
-        type: Number,
-        default: 0,
-      },
-    },
+  detectOncomingObstacle: {
+    type: Number,
   },
+  safetyMode: {
+    type: String,
+  },
+  ttcThreshold: {
+    type: String,
+  },
+  brakeOnDuration: {
+    type: String,
+  },
+  brakeOffDuration: {
+    type: String,
+  },
+  sleepAlertMode: {
+    type: String,
+  },
+  preWarning: {
+    type: String,
+  },
+  sleepAlertInterval: {
+    type: String,
+  },
+  activationSpeed: {
+    type: String,
+  },
+  startTime: {
+    type: String,
+  },
+  stopTime: {
+    type: String,
+  },
+
+  brakeActivateTime: {
+    type: String,
+  },
+  braking: {
+    type: Number,
+  },
+  driverEvalMode: {
+    type: String,
+  },
+  maxLaneChangeThreshold: {
+    type: String,
+  },
+  minLaneChangeThreshold: {
+    type: String,
+  },
+  maxHarshAccelerationThreshold: {
+    type: String,
+  },
+  minHarshAccelerationThreshold: {
+    type: String,
+  },
+  suddenBrakingThreshold: {
+    type: String,
+  },
+  maxSpeedBumpThreshold: {
+    type: String,
+  },
+  minSpeedBumpThreshold: {
+    type: String,
+  },
+
+  GovernerMode: {
+    type: String,
+  },
+
+  speedLimit: {
+    type: String,
+  },
+
+  cruiseMode: {
+    type: String,
+  },
+
+  activationSpeed: {
+    type: String,
+  },
+  vehicleType: {
+    type: String,
+  },
+  obdMode: {
+    type: String,
+  },
+  protocolType: {
+    type: String,
+  },
+  tpmsMode: {
+    type: String,
+  },
+  acceleratorType: {
+    type: String,
+  },
+  brakeType: {
+    type: String,
+  },
+
+  lazerMode: {
+    type: String,
+  },
+  rfSensorMode: {
+    type: String,
+  },
+
+  rfAngle: {
+    type: String,
+  },
+  reserved1: {
+    type: String,
+  },
+  reserved2: {
+    type: String,
+  },
+  reserved3: {
+    type: String,
+  },
+  speedSource: {
+    type: String,
+  },
+  slope: {
+    type: String,
+  },
+  offset: {
+    type: String,
+  },
+  delay: {
+    type: String,
+  },
+
+  rfNameMode: {
+    type: String,
+  },
+  noAlarm: {
+    type: String,
+  },
+  speed: {
+    type: String,
+  },
+  accelerationBypass: {
+    type: String,
+  },
+
+  rfSensorAbsent: {
+    type: String,
+  },
+  gyroscopeAbsent: {
+    type: String,
+  },
+  hmiAbsent: {
+    type: String,
+  },
+  timeNotSet: {
+    type: String,
+  },
+  accelerationError: {
+    type: String,
+  },
+  brakeError: {
+    type: String,
+  },
+  tpmsError: {
+    type: String,
+  },
+  simCardAbsent: {
+    type: String,
+  },
+  lowBattery: {
+    type: String,
+  },
+  tripNotStarted: {
+    type: String,
+  },
+  bluetoothConnAbsent: {
+    type: String,
+  },
+  obdAbsent: {
+    type: String,
+  },
+  noAlarm: {
+    type: String,
+  },
+  laserSensorAbsent: {
+    type: String,
+  },
+  rfidAbsent: {
+    type: String,
+  },
+  iotAbsent: {
+    type: String,
+  },
+
+  firmwareOtaUpdate: {
+    type: String,
+  },
+  firewarereserver1: {
+    type: String,
+  },
+
+  alcoholDetectionMode: {
+    type: String,
+  },
+
+  alcoholreserved1: {
+    type: String,
+  },
+
+  driverDrowsinessMode: {
+    type: String,
+  },
+
+  driverreserved1: {
+    type: String,
+  },
+
   status: {
     type: String,
   },
