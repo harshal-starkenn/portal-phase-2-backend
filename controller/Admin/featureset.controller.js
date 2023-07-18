@@ -17,25 +17,178 @@ const featuresetList = async (req, res) => {
 
 //add the new featureset
 const featuresetAdd = async (req, res) => {
-  const { featureSetId, featureSetName, selectOrganisation, systemType } =
-    req.body;
-
-  const checkFeatureSet = await featuresetModel.findOne({
+  const {
+    featureSetId,
     featureSetName,
-  });
+    selectCustomer,
+    mode,
+    CASMode,
+    activationSpeed,
+    alarmThreshold,
+    brakeThreshold,
+    brakeSpeed,
+    detectStationaryObject,
+    allowCompleteBrake,
+    detectOncomingObstacle,
+    safetyMode,
+    ttcThreshold,
+    brakeOnDuration,
+    brakeOffDuration,
+    sleepAlertMode,
+    preWarning,
+    sleepAlertInterval,
+    startTime,
+    stopTime,
+    brakeActivateTime,
+    braking,
+    driverEvalMode,
+    maxLaneChangeThreshold,
+    minLaneChangeThreshold,
+    maxHarshAccelerationThreshold,
+    minHarshAccelerationThreshold,
+    suddenBrakingThreshold,
+    maxSpeedBumpThreshold,
+    minSpeedBumpThreshold,
+    GovernerMode,
+    speedLimit,
+    cruiseMode,
+    vehicleType,
+    obdMode,
+    protocolType,
+    tpmsMode,
+    acceleratorType,
+    brakeType,
+    lazerMode,
+    rfSensorMode,
+    rfAngle,
+    reserved1,
+    reserved2,
+    reserved3,
+    speedSource,
+    slope,
+    offset,
+    delay,
+    rfNameMode,
+    noAlarm,
+    speed,
+    accelerationBypass,
+    rfSensorAbsent,
+    gyroscopeAbsent,
+    hmiAbsent,
+    timeNotSet,
+    accelerationError,
+    brakeError,
+    tpmsError,
+    simCardAbsent,
+    lowBattery,
+    tripNotStarted,
+    bluetoothConnAbsent,
+    obdAbsent,
+    laserSensorAbsent,
+    rfidAbsent,
+    iotAbsent,
+    firmwareOtaUpdate,
+    firewarereserver1,
+    alcoholDetectionMode,
+    alcoholreserved1,
+    driverDrowsinessMode,
+    driverreserved1,
+  } = req.body;
 
-  if (checkFeatureSet) {
-    res.status(404).send("Feature Set Name already exists");
-  } else {
-    const newFeatureSet = new featuresetModel({ ...req.body, status: true });
+  try {
+    const checkFeatureSet = await featuresetModel.findOne({
+      featureSetName,
+    });
+
+    if (checkFeatureSet) {
+      return res.status(400).json({ error: "Feature Set Name already exists" });
+    }
+
+    const newFeatureSet = new featuresetModel({
+      featureSetId,
+      featureSetName,
+      selectCustomer,
+      mode,
+      CASMode,
+      activationSpeed,
+      alarmThreshold,
+      brakeThreshold,
+      brakeSpeed,
+      detectStationaryObject,
+      allowCompleteBrake,
+      detectOncomingObstacle,
+      safetyMode,
+      ttcThreshold,
+      brakeOnDuration,
+      brakeOffDuration,
+      sleepAlertMode,
+      preWarning,
+      sleepAlertInterval,
+      startTime,
+      stopTime,
+      brakeActivateTime,
+      braking,
+      driverEvalMode,
+      maxLaneChangeThreshold,
+      minLaneChangeThreshold,
+      maxHarshAccelerationThreshold,
+      minHarshAccelerationThreshold,
+      suddenBrakingThreshold,
+      maxSpeedBumpThreshold,
+      minSpeedBumpThreshold,
+      GovernerMode,
+      speedLimit,
+      cruiseMode,
+      vehicleType,
+      obdMode,
+      protocolType,
+      tpmsMode,
+      acceleratorType,
+      brakeType,
+      lazerMode,
+      rfSensorMode,
+      rfAngle,
+      reserved1,
+      reserved2,
+      reserved3,
+      speedSource,
+      slope,
+      offset,
+      delay,
+      rfNameMode,
+      noAlarm,
+      speed,
+      accelerationBypass,
+      rfSensorAbsent,
+      gyroscopeAbsent,
+      hmiAbsent,
+      timeNotSet,
+      accelerationError,
+      brakeError,
+      tpmsError,
+      simCardAbsent,
+      lowBattery,
+      tripNotStarted,
+      bluetoothConnAbsent,
+      obdAbsent,
+      laserSensorAbsent,
+      rfidAbsent,
+      iotAbsent,
+      firmwareOtaUpdate,
+      firewarereserver1,
+      alcoholDetectionMode,
+      alcoholreserved1,
+      driverDrowsinessMode,
+      driverreserved1,
+      status: "true",
+    });
 
     const savedFeatureSet = await newFeatureSet.save();
-
     if (savedFeatureSet) {
-      res.status(201).send("Feature Set added successfully");
-    } else {
-      res.status(500).send("Error in adding Feature Set");
+      res.status(201).json({ message: "Feature Set added successfully" });
     }
+  } catch (error) {
+    res.status(500).json({ error: "Error in adding Feature Set" });
   }
 };
 
@@ -45,21 +198,34 @@ const featuresetEdit = async (req, res) => {
   const updateParams = req.body;
 
   try {
+    const existingFeatureSet = await featuresetModel.findOne({
+      featureSetId,
+    });
+
+    if (!existingFeatureSet) {
+      return res.status(404).send("Feature Set not found");
+    }
+
+    const checkFeatureSetName = await featuresetModel.findOne({
+      featureSetName: updateParams.featureSetName,
+      _id: { $ne: existingFeatureSet._id },
+    });
+
+    if (checkFeatureSetName) {
+      return res
+        .status(409)
+        .send("Feature Set Name already exists in another feature set");
+    }
+
     const updatedFeatureSet = await featuresetModel.findOneAndUpdate(
       { featureSetId },
       updateParams,
       { new: true }
     );
 
-    if (updatedFeatureSet) {
-      res.status(200).send(updatedFeatureSet);
-    } else {
-      res.status(404).send("Feature Set not found");
-    }
+    res.status(200).send(updatedFeatureSet);
   } catch (error) {
-    res
-      .status(500)
-      .send("Featureset Name already exists to another featureset");
+    res.status(500).send("Error in updating Feature Set");
   }
 };
 
