@@ -30,10 +30,10 @@ const vehicleSchema = new mongoose.Schema({
         type: Number,
         default: 1,
     },
-    status: {
-        type: String,
-        required: true,
-    },
+    // status: {
+    //     type: String,
+    //     required: true,
+    // },
     created_at: {
         type: Date,
         default: Date.now,
@@ -58,6 +58,7 @@ const vehicleSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status:              {type: String,                default: true },
 });
 
 vehicleSchema.pre('save', function(done) {

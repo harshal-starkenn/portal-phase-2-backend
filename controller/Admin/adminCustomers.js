@@ -23,12 +23,12 @@ function isValidateEmail(Vemail) {
 }
 
 
-//=========================================={Add- User} [START]========================================================//
+//============================================{Add- User} [START]======================================================//
 exports.Signup = async (req, res) => {
     try {
      
   
-      const {first_name, last_name, email, password, confirmPassword,user_type } = req.body;
+      const {first_name, last_name, email, password, confirmPassword ,user_type } = req.body;
       const { company_name, address, state, city, pincode, phone} = req.body;
       
  
@@ -69,9 +69,9 @@ exports.Signup = async (req, res) => {
       } else if  (!password) {
         return res.status(400).json({ message: 'PASSWORD is required' });
       } else if  (!confirmPassword) {
-        return res.status(400).json({ message: 'user_type is required' });
-      } else if  (!user_type) {
         return res.status(400).json({ message: 'CONFIRM_PASSWORD is required' });
+      } else if  (!user_type) {
+        return res.status(400).json({ message: 'USER TYPE is required' });
       }  else if  (!company_name) { 
         return res.status(400).json({ message: 'COMPANY_NAME is required' }); 
       }  else if  (!address) { 
@@ -88,18 +88,38 @@ exports.Signup = async (req, res) => {
   //---------------------Check filed's required---END----------------------------------------------------//
 
   //-------------------------Check if password and confirm password match--------------------------//
-      else if (password !== confirmPassword) {
-        return res
-          .status(400)
-          .json({ message: 'Password and confirm password do not match' });
-      } 
-      
+      // else if (password !== confirmPassword) {
+      //   return res
+      //     .status(400)
+      //     .json({ message: 'Password and confirm password do not match' });
+      // } 
+
+
+      if (password != confirmPassword) {
+        return res.status(402).json({
+          statuscode: 402,
+          status: "Failed",
+          message: "Passwords MisMatched",
+          data: {},
+        });
+      }
     
+      var user = await User.findOne({ email: email });
+
+      if (user) {
+        return res.status(404).json({
+          statuscode: 404,
+          status: "Failed",
+          message: "Email Is Already In Use",
+          data: {},
+        });
+      }
 
   //--------------------------Hash the password And Confirm Password-------------------------------//
-      const hashedPassword = await User.hashPassword(password, 10);
-      const confirmHashPassword = await User.hashPassword(confirmPassword,10);
-  
+    //  const hashedPassword = await User.hashPassword(password, 10);
+    //  const confirmHashPassword = await User.hashPassword(confirmPassword,10);
+     // var user = await User.findOne({ email: email });
+     var hash = await User.hashPassword(password);
       //==============Generate a new unique UUID=============//
       const id = uuidv4();
      // const userId = id();
@@ -118,8 +138,8 @@ exports.Signup = async (req, res) => {
         first_name,
         last_name,
         email,
-        password: hashedPassword, 
-        confirmPassword: confirmHashPassword,
+        password: hash, 
+        confirmPassword: hash,
         user_type,
         company_name,
         address,
@@ -142,10 +162,9 @@ exports.Signup = async (req, res) => {
       res.status(500).json({ code: 500, message: 'Failed to add User' });
     }
 };
-//============================================{ADD- User} [END]=========================================================//
+//============================================{ADD- User} [END]========================================================//
 
-//=========================================={Admin Login  Start}=======================================================//
-
+//============================================{Admin Login  Start}=====================================================//
 exports.Login = async (req, res) => {
   try {
     var { email, password } = req.body;
@@ -189,7 +208,7 @@ exports.Login = async (req, res) => {
 
 //====================Paswword convert into bcrypt===========================//
 
-const isValid = await User.hashPassword(password, user.password);
+const isValid = await User.comparePasswords(password, user.password);
 console.log("password", password);
 
 if (!isValid) {
@@ -249,75 +268,9 @@ if (!isValid) {
     });
   }
 };
-exports.Login1 = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+//============================================{Admin Login  END}=======================================================//
 
-    // Find user account with the provided email
-    const user = await User.findOne({ email: email });
-
-    // If user not found, return error
-    if (!user) {
-      return res.status(404).json({
-        statuscode: 404,
-        status: "Not Found",
-        message: "Invalid Email",
-        data: {},
-      });
-    }
-
-    // Check if the provided password matches the stored hashed password
-    const isValid = await User.comparePasswords(password, user.password);
-    if (!isValid) {
-      return res.status(401).json({
-        statuscode: 401,
-        status: "Unauthorized",
-        message: "Invalid Password",
-        data: {},
-      });
-    }
-
-    // Generate JWT token
-    const { error, token } = await generateJwt(user.email, user.userId);
-    if (error) {
-      return res.status(500).json({
-        statuscode: 500,
-        status: "Error",
-        message: "Couldn't create access token. Please try again later",
-        data: {},
-      });
-    }
-
-    // Update user's accessToken and save the changes
-    user.accessToken = token;
-    await user.save();
-
-    return res.status(200).json({
-      statuscode: 200,
-      status: "OK",
-      message: "User Logged In Successfully",
-      accessToken: token,
-      data: {
-        active: user.active,
-        userId: user.userId,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    console.error("Login error", error);
-    return res.status(500).json({
-      statuscode: 500,
-      status: "Error",
-      message: "Couldn't login. Please try again later.",
-      data: {},
-    });
-  }
-};
-
-//=========================================={Admin Login  END}=========================================================//
-
-//=========================================={Admin Logout START========================================================//
-
+//============================================{Admin Logout START======================================================//
 exports.Logout = async (req, res) => {
   try {
     const { id } = req.decoded;
@@ -355,10 +308,9 @@ exports.Logout = async (req, res) => {
     });
   }
 };
-//=========================================={Admin Logout END==========================================================//
+//============================================{Admin Logout END========================================================//
 
-//============================================{Upadte- User} [START]====================================================//
-
+//============================================{Upadte- User} [START]===================================================//
 exports.Update = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -375,7 +327,8 @@ exports.Update = async (req, res) => {
       pincode,
       phone
     } = req.body;
-
+    var createdAt = new Date()
+    var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
     const updatedUser = await User.findOneAndUpdate( {userId},
       {
         first_name,
@@ -386,11 +339,13 @@ exports.Update = async (req, res) => {
         state,
         city,
         pincode,
-        phone
+        phone,
+        "updated_at": currentTimeIST,
       },
+      
       { new: true }
     );
-
+   
     if (!updatedUser) {
       return res.status(404).json({ code: 404, message: 'User not found' });
     }
@@ -401,13 +356,13 @@ exports.Update = async (req, res) => {
     res.status(500).json({ code: 500, message: 'Failed to update User' });
   }
 };
-//============================================{Upadte- User} [END]======================================================//
+//============================================{Upadte- User} [END]=====================================================//
 
-//============================================{User-Delete} [START]=====================================================//
+//============================================{User-Delete} [START]====================================================//
 exports.Delete = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findOneAndDelete({ userId: userId});
+    const user = await User.findOneAndUpdate({ userId: userId}, {status: false});
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -419,12 +374,12 @@ exports.Delete = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete user' });
   }
 };
-//============================================{User-Delete} [END]=======================================================//
+//============================================{User-Delete} [END]======================================================//
 
-//============================================{Get- User} [START]=======================================================//
+//============================================{Get- User} [START]======================================================//
 exports.Get = async (req, res) => {
     try{
-        const data = await User.find({});
+        const data = await User.find({status: true});
         totalCount = data.length;
         if (totalCount > 0) {
 
@@ -442,4 +397,21 @@ exports.Get = async (req, res) => {
           }
     
 };
-//============================================{Get- User} [END]=========================================================//
+//============================================{Get- User} [END]========================================================//
+
+//============================================{Get- User- By Id} [START]===============================================//
+exports.GetUserById = async (req, res) => {
+  const {userId} = req.params;
+  try{
+    const data = await User.findOne({userId:userId});
+    return res.status(200).json({
+        statuscode: 200,
+        status: 'OK',
+        message: 'User Get Successfull',
+        data
+      });
+      } catch (err) {
+        console.log(err, "error in Vehicle Data")
+      }
+};
+//============================================{Get- User- By Id} [END]=================================================//

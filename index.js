@@ -64,6 +64,9 @@ app.use("/api/Admin/Devices", DevicesRouter);
 //----------------------{Admin-Analytics-ThresHold}--------//
 app.use("/api/Admin/AnalyticsThreshold", ATRouter);
 
+//----------------------{Customer-Vehicles}----------------//As per required 
+//app.use("/api/Admin/Vehicles", VehiclesRouter);
+
 //----------------------{Customer}-------------------------//
 app.use("/api/Customers",Customers);
 
