@@ -1,5 +1,7 @@
+const User = require("../../models/Admin/adminCustomers");
 const { featuresetModel } = require("../../models/Admin/featureset.model");
 
+//get the total list of featuresets
 const featuresetList = async (req, res) => {
   try {
     const featuresets = await featuresetModel.find(
@@ -7,12 +9,13 @@ const featuresetList = async (req, res) => {
       "featureSetId featureSetName selectOrganisation"
     );
 
-    res.status(200).json(featuresets);
+    res.status(200).send(featuresets);
   } catch (err) {
     res.status(500).send("Error in getting the list of featuresets");
   }
 };
 
+//add the new featureset
 const featuresetAdd = async (req, res) => {
   const { featureSetId, featureSetName, selectOrganisation, systemType } =
     req.body;
@@ -22,7 +25,7 @@ const featuresetAdd = async (req, res) => {
   });
 
   if (checkFeatureSet) {
-    res.status(500).send("Feature Set Name already exists");
+    res.status(404).send("Feature Set Name already exists");
   } else {
     const newFeatureSet = new featuresetModel({ ...req.body, status: true });
 
@@ -36,6 +39,7 @@ const featuresetAdd = async (req, res) => {
   }
 };
 
+//edit the added featureset
 const featuresetEdit = async (req, res) => {
   const { featureSetId } = req.params;
   const updateParams = req.body;
@@ -48,15 +52,18 @@ const featuresetEdit = async (req, res) => {
     );
 
     if (updatedFeatureSet) {
-      res.status(200).json(updatedFeatureSet);
+      res.status(200).send(updatedFeatureSet);
     } else {
       res.status(404).send("Feature Set not found");
     }
   } catch (error) {
-    res.status(500).send("Error in updating Feature Set");
+    res
+      .status(500)
+      .send("Featureset Name already exists to another featureset");
   }
 };
 
+//delete the featureset/ only updating status to false
 const featuresetDelete = async (req, res) => {
   const { featureSetId } = req.params;
 
@@ -69,67 +76,118 @@ const featuresetDelete = async (req, res) => {
     if (deleteFeatureset) {
       res.status(200).send(deleteFeatureset);
     } else {
-      res.status(500).send("Failed to update the status");
+      res.status(404).send("Failed to update the status");
     }
   } catch (err) {
     res.status(500).send("Error in updating the status");
   }
 };
 
-const featuresetAssignOrganization = async (req, res) => {
+//assign created featureset to customer
+const featuresetAssignCustomer = async (req, res) => {
   const { featureSetId } = req.params;
-
   try {
-    const addOrganization = await featuresetModel.findOneAndUpdate(
-      { featureSetId },
-      { $push: { selectOrganisation: req.body.selectOrganisation } }
-    );
-
-    if (addOrganization) {
-      res.status(200).send(addOrganization);
+    const checkCustomer = await featuresetModel.find({
+      featureSetId,
+      selectCustomer: req.body.selectCustomer,
+    });
+    if (checkCustomer.length > 0) {
+      res.status(404).send("Customer already exists");
     } else {
-      res.status(500).send("Error in adding organization");
+      const addCustomer = await featuresetModel.findOneAndUpdate(
+        { featureSetId },
+        { $push: { selectCustomer: req.body.selectCustomer } }
+      );
+
+      if (addCustomer) {
+        res.status(200).send(addCustomer);
+      } else {
+        res.status(404).send("Error in adding Customer");
+      }
     }
   } catch (err) {
-    res.status(500).send("Failed to add organization");
+    res.status(500).send("Failed to add Customer");
   }
 };
 
-const featuresetUnassignOrganization = async (req, res) => {
+//unassign the customer from featureset
+const featuresetUnassignCustomer = async (req, res) => {
   const { featureSetId } = req.params;
 
   try {
-    const removeOrganization = await featuresetModel.findOneAndUpdate(
+    const removeCustomer = await featuresetModel.findOneAndUpdate(
       { featureSetId },
-      { $pull: { selectOrganisation: { $in: req.body.selectOrganisation } } }
+      { $pull: { selectCustomer: { $in: req.body.selectCustomer } } }
     );
 
-    if (removeOrganization) {
-      res.status(200).send(removeOrganization);
+    if (removeCustomer) {
+      res.status(200).send(removeCustomer);
     } else {
-      res.status(500).send("Error in unassigning the organization");
+      res.status(404).send("Error in unassigning the Customer");
     }
   } catch (err) {
-    res.status(500).send("Failed to unassign organization");
+    res.status(500).send("Failed to unassign Customer");
   }
 };
 
+//get the featureset assign to particular customer based on userId
 const featuresetDetailsOfCustomer = async (req, res) => {
   const { userId } = req.params;
 
   try {
     const featuresets = await featuresetModel.find({
-      selectedOrganisation: { $in: [userId] },
+      selectCustomer: { $in: [userId] },
     });
 
     if (featuresets.length > 0) {
-      res.status(200).json(featuresets);
+      res.status(200).send(featuresets);
     } else {
-      res.status(404).json({ message: "No featuresets found for the user" });
+      res.status(404).send({ message: "No featuresets found for the user" });
     }
   } catch (err) {
     console.error("Error retrieving featuresets:", err);
-    res.status(500).json({ message: "Failed to get featuresets" });
+    res.status(500).send({ message: "Failed to get featuresets" });
+  }
+};
+
+//list of assign customers
+const featuresetCustomerAssignList = async (req, res) => {
+  const { featureSetId } = req.params;
+
+  try {
+    const featureSetCustomers = await featuresetModel.findOne({ featureSetId });
+    const listOfUsers = await User.find({});
+
+    const listOfAssignCustomer = listOfUsers.filter((customer) =>
+      featureSetCustomers.selectCustomer.includes(customer.userId)
+    );
+
+    if (listOfAssignCustomer) {
+      res.status(200).send(listOfAssignCustomer);
+    } else {
+      res.status(404).send("Error getting assign customer list");
+    }
+  } catch (err) {
+    res.status(500).send("Failed to retrieve the list of assigned customers");
+  }
+};
+
+//list of customers which are not assign to this featureset
+
+const featuresetCustomerNotAssignList = async (req, res) => {
+  const { featureSetId } = req.params;
+  try {
+    const getUsersList = await User.find({});
+
+    const featuresetCustomers = await featuresetModel.findOne({ featureSetId });
+    const filternotAssignCustomers = getUsersList?.filter(
+      (customer) =>
+        !featuresetCustomers.selectCustomer.includes(customer.userId)
+    );
+
+    res.status(200).send(filternotAssignCustomers);
+  } catch (err) {
+    res.status(500).send("Failed to get list of not assign customers");
   }
 };
 
@@ -138,7 +196,9 @@ module.exports = {
   featuresetAdd,
   featuresetEdit,
   featuresetDelete,
-  featuresetAssignOrganization,
-  featuresetUnassignOrganization,
+  featuresetAssignCustomer,
+  featuresetUnassignCustomer,
   featuresetDetailsOfCustomer,
+  featuresetCustomerAssignList,
+  featuresetCustomerNotAssignList,
 };
