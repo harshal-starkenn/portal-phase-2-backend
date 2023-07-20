@@ -9,6 +9,8 @@ const {
   featuresetDetailsOfCustomer,
   featuresetCustomerAssignList,
   featuresetCustomerNotAssignList,
+  featureset,
+  featuresetAllCustomerList,
 } = require("../../controller/Admin/featureset.controller");
 const featuresetRouter = express.Router();
 
@@ -54,6 +56,14 @@ featuresetRouter.get(
 featuresetRouter.get(
   "/featureset-not-assign-customerlist/:featureSetId",
   featuresetCustomerNotAssignList
+);
+//
+featuresetRouter.get("/featureset/:featureSetId", featureset);
+
+//to get all customer list
+featuresetRouter.get(
+  "/featureset-get-all-customers",
+  featuresetAllCustomerList
 );
 
 module.exports = { featuresetRouter };
