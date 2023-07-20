@@ -17,87 +17,11 @@ const featuresetList = async (req, res) => {
 
 //add the new featureset
 const featuresetAdd = async (req, res) => {
-  const {
-    featureSetId,
-    featureSetName,
-    selectCustomer,
-    mode,
-    CASMode,
-    activationSpeed,
-    alarmThreshold,
-    brakeThreshold,
-    brakeSpeed,
-    detectStationaryObject,
-    allowCompleteBrake,
-    detectOncomingObstacle,
-    safetyMode,
-    ttcThreshold,
-    brakeOnDuration,
-    brakeOffDuration,
-    sleepAlertMode,
-    preWarning,
-    sleepAlertInterval,
-    startTime,
-    stopTime,
-    brakeActivateTime,
-    braking,
-    driverEvalMode,
-    maxLaneChangeThreshold,
-    minLaneChangeThreshold,
-    maxHarshAccelerationThreshold,
-    minHarshAccelerationThreshold,
-    suddenBrakingThreshold,
-    maxSpeedBumpThreshold,
-    minSpeedBumpThreshold,
-    GovernerMode,
-    speedLimit,
-    cruiseMode,
-    vehicleType,
-    obdMode,
-    protocolType,
-    tpmsMode,
-    acceleratorType,
-    brakeType,
-    lazerMode,
-    rfSensorMode,
-    rfAngle,
-    reserved1,
-    reserved2,
-    reserved3,
-    speedSource,
-    slope,
-    offset,
-    delay,
-    rfNameMode,
-    noAlarm,
-    speed,
-    accelerationBypass,
-    rfSensorAbsent,
-    gyroscopeAbsent,
-    hmiAbsent,
-    timeNotSet,
-    accelerationError,
-    brakeError,
-    tpmsError,
-    simCardAbsent,
-    lowBattery,
-    tripNotStarted,
-    bluetoothConnAbsent,
-    obdAbsent,
-    laserSensorAbsent,
-    rfidAbsent,
-    iotAbsent,
-    firmwareOtaUpdate,
-    firewarereserver1,
-    alcoholDetectionMode,
-    alcoholreserved1,
-    driverDrowsinessMode,
-    driverreserved1,
-  } = req.body;
+  const requestBody = req.body; // Get the entire request body as the payload is already in the correct format
 
   try {
     const checkFeatureSet = await featuresetModel.findOne({
-      featureSetName,
+      featureSetName: requestBody.featureSetName,
     });
 
     if (checkFeatureSet) {
@@ -105,81 +29,7 @@ const featuresetAdd = async (req, res) => {
     }
 
     const newFeatureSet = new featuresetModel({
-      featureSetId,
-      featureSetName,
-      selectCustomer,
-      mode,
-      CASMode,
-      activationSpeed,
-      alarmThreshold,
-      brakeThreshold,
-      brakeSpeed,
-      detectStationaryObject,
-      allowCompleteBrake,
-      detectOncomingObstacle,
-      safetyMode,
-      ttcThreshold,
-      brakeOnDuration,
-      brakeOffDuration,
-      sleepAlertMode,
-      preWarning,
-      sleepAlertInterval,
-      startTime,
-      stopTime,
-      brakeActivateTime,
-      braking,
-      driverEvalMode,
-      maxLaneChangeThreshold,
-      minLaneChangeThreshold,
-      maxHarshAccelerationThreshold,
-      minHarshAccelerationThreshold,
-      suddenBrakingThreshold,
-      maxSpeedBumpThreshold,
-      minSpeedBumpThreshold,
-      GovernerMode,
-      speedLimit,
-      cruiseMode,
-      vehicleType,
-      obdMode,
-      protocolType,
-      tpmsMode,
-      acceleratorType,
-      brakeType,
-      lazerMode,
-      rfSensorMode,
-      rfAngle,
-      reserved1,
-      reserved2,
-      reserved3,
-      speedSource,
-      slope,
-      offset,
-      delay,
-      rfNameMode,
-      noAlarm,
-      speed,
-      accelerationBypass,
-      rfSensorAbsent,
-      gyroscopeAbsent,
-      hmiAbsent,
-      timeNotSet,
-      accelerationError,
-      brakeError,
-      tpmsError,
-      simCardAbsent,
-      lowBattery,
-      tripNotStarted,
-      bluetoothConnAbsent,
-      obdAbsent,
-      laserSensorAbsent,
-      rfidAbsent,
-      iotAbsent,
-      firmwareOtaUpdate,
-      firewarereserver1,
-      alcoholDetectionMode,
-      alcoholreserved1,
-      driverDrowsinessMode,
-      driverreserved1,
+      ...requestBody, // Spread the entire requestBody to the newFeatureSet object
       status: "true",
     });
 
@@ -321,17 +171,25 @@ const featuresetCustomerAssignList = async (req, res) => {
   const { featureSetId } = req.params;
 
   try {
-    const featureSetCustomers = await featuresetModel.findOne({ featureSetId });
-    const listOfUsers = await User.find({});
+    const featureSetCustomers = await featuresetModel.findOne({
+      featureSetId,
+    });
+
+    if (!featureSetCustomers) {
+      res.status(404).send("Feature set not found for user_type=2");
+      return;
+    }
+
+    const listOfUsers = await User.find({ user_type: "2" }); // Fetch users with user_type="2"
 
     const listOfAssignCustomer = listOfUsers.filter((customer) =>
       featureSetCustomers.selectCustomer.includes(customer.userId)
     );
 
-    if (listOfAssignCustomer) {
+    if (listOfAssignCustomer.length > 0) {
       res.status(200).send(listOfAssignCustomer);
     } else {
-      res.status(404).send("Error getting assign customer list");
+      res.status(404).send("No assigned customers found");
     }
   } catch (err) {
     res.status(500).send("Failed to retrieve the list of assigned customers");
@@ -343,7 +201,7 @@ const featuresetCustomerAssignList = async (req, res) => {
 const featuresetCustomerNotAssignList = async (req, res) => {
   const { featureSetId } = req.params;
   try {
-    const getUsersList = await User.find({});
+    const getUsersList = await User.find({ user_type: "2" }); // Fetch users with user_type="2"
 
     const featuresetCustomers = await featuresetModel.findOne({ featureSetId });
     const filternotAssignCustomers = getUsersList?.filter(
@@ -357,6 +215,39 @@ const featuresetCustomerNotAssignList = async (req, res) => {
   }
 };
 
+//get particular featureset data
+const featureset = async (req, res) => {
+  const { featureSetId } = req.params;
+
+  try {
+    const data = await featuresetModel.findOne({ featureSetId });
+
+    if (data) {
+      res.status(200).send(data);
+    } else {
+      res.status(404).send("Error in featureset Data");
+    }
+  } catch (err) {
+    res.status(500).send("Failed to get data of featureset");
+  }
+};
+
+//get the list of customers to use while adding featureset
+
+const featuresetAllCustomerList = async (req, res) => {
+  try {
+    const getList = await User.find({ status: true, user_type: "2" });
+
+    if (getList.length > 0) {
+      res.status(200).send(getList);
+    } else {
+      res.status(404).send("No customers found matching the criteria");
+    }
+  } catch (err) {
+    res.status(500).send("Failed to get list of all customers");
+  }
+};
+
 module.exports = {
   featuresetList,
   featuresetAdd,
@@ -367,4 +258,6 @@ module.exports = {
   featuresetDetailsOfCustomer,
   featuresetCustomerAssignList,
   featuresetCustomerNotAssignList,
+  featureset,
+  featuresetAllCustomerList,
 };
