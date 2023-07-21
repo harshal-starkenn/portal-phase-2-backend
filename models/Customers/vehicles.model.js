@@ -16,15 +16,15 @@ const vehicleSchema = new mongoose.Schema({
     },
     dms: {
         type: String,
-       // required: true,
+        default: null,
     },
     ecu: {
         type: String,
-       // required: true,
+        default: null,
     },
     iot: {
         type: String,
-       // required: true,
+        default: null,
     },
     featureset: {
         type: Number,
@@ -34,36 +34,30 @@ const vehicleSchema = new mongoose.Schema({
     //     type: String,
     //     required: true,
     // },
-    created_at: {
-        type: Date,
-        default: Date.now,
-    },
-    created_by: {
-        type: String,
-        required: true,
-    },
-    modified_at: {
-        type: Date,
-        default: Date.now,
-    },
-    modified_by: {
-        type: String,
-        required: true,
-    },
-    updated_at: {
-        type: Date,
-        default: Date.now,
-    },
-    updated_by: {
-        type: String,
-        required: true,
-    },
+    // created_at: {
+    //     type: Date,
+    //     default: Date.now,
+    // },
+    // created_by: {
+    //     type: String,
+    //     required: true,
+    // },
+    // modified_at: {
+    //     type: Date,
+    //     default: Date.now,
+    // },
+    // modified_by: {
+    //     type: String,
+    //     required: true,
+    // },
+    created_at: { type: String, required: true },
+    updated_at: { type: String                 },
+    
+    // updated_by: {
+    //     type: String,
+    //     required: true,
+    // },
     status:              {type: String,                default: true },
-});
-
-vehicleSchema.pre('save', function(done) {
-    this.updated_at = Date.now();
-    done();
 });
 
 // Create the VehicleModel model

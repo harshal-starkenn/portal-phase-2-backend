@@ -27,6 +27,8 @@ duration:   {type: Number,  required: true},
 
     },
     status:              {type: String,                default: true },
+    created_at: { type: String, required: true },
+    updated_at: { type: String, required: true },
 }) 
 
 const AnalyticsThresholds = mongoose.model('AnalyticsThreshold_Admin', AT_Schema);

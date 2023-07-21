@@ -1,5 +1,6 @@
 const AnalyticsThresholds = require("../../models/Admin/AT.model");
 const Customers = require("../../models/Admin/adminCustomers");
+var moment = require('moment-timezone');
 
 const express = require('express');
 const bodyParser = require("body-parser");
@@ -37,7 +38,8 @@ exports.AddAnalytics = async (req, res) => {
       ) {
         return res.status(400).json({ message: "Missing required fields" });
       }
-  
+      var createdAt = new Date()
+      var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
       const new_AT = new AnalyticsThresholds({
         title:title,
         customer_id:customer_id,
@@ -63,7 +65,9 @@ exports.AddAnalytics = async (req, res) => {
         },
         newHalt:{
         duration,
-        }
+        },
+        "created_at": currentTimeIST,
+        "updated_at": currentTimeIST,
       });
 
 

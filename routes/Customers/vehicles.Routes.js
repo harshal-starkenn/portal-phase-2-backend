@@ -13,7 +13,7 @@ VehicleRoutes.post("/addVehicle", VehiclesController.addVehicle);
 VehicleRoutes.put("/updateVehicle/:userId", VehiclesController.updateVehicle); //  NOT Working
 
  // Delete Vehicle Data By Vehicle Id
- VehicleRoutes.delete("/deleteVehicle/:vehicle_id", VehiclesController.deleteVehicle);
+ VehicleRoutes.put("/deleteVehicle/:vehicle_id", VehiclesController.deleteVehicle);
  
  // Getting Data of Particular vehicle
  VehicleRoutes.get("/getVehicle/:userId", VehiclesController.getVehicle);

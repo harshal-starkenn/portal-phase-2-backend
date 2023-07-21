@@ -1,75 +1,67 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const reportsSchema = new mongoose.Schema({
-  
-   
-    id: {
-        type: String,
-        required: true, 
+const ReportSchema = new mongoose.Schema(
+  {
+    fromDate: {
+      type: Date,
+      required: true,
     },
-    trip_id: {
-        type: String,
-        required: true,
+    toDate: {
+      type: Date,
+      required: true,
     },
-    device_id: {
-        type: String,
-       // required: true,
+    vehicleParams: {
+      CAS: {
+        type: [String],
+        default: [
+          "Automatic Braking",
+          "Accident Saved",
+          "Tailgating",
+          "Harsh Acceleration",
+          "Sudden brake",
+          "Lane change",
+          "Speed bump",
+          "Overspeeding",
+          "Alarm 2",
+          "Alarm 3",
+        ],
+      },
+      DMS: {
+        type: [String],
+        default: [
+          "Drowsiness",
+          "Distraction",
+          "No driver",
+          "Overspeeding",
+          "Accident Saved",
+        ],
+      },
     },
-    event: {
-        type: String,
-       // required: true,
+    recipients: {
+      type: [
+        {
+          name: {
+            type: String,
+            required: true,
+          },
+          email: {
+            type: String,
+            required: true,
+          },
+          mobileNumber: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
+      default: [],
     },
-    message: {
-        type: String,
-       // required: true,
-    },
-    timestamp: {
-        type: String,
-       // default: 1,
-    },
-    ignition: {
-        type: String,
-        required: true,
-    },
-    lat: {
-        type: String,
-       // default: Date.now,
-    },
-    lng: {
-        type: String,
-        required: true,
-    },
-    spd: {
-        type: String,
-       // default: Date.now,
-    },
-      cpu_lods: {
-        type: String,
-       // default: Date.now,
-    },
-    cpu_temp: {
-        type: String,
-        required: true,
-    }, 
-    memory: {
-        type: String,
-        required: true,
-    },
-    jsondata: {
-        type: String,
-        required: true,
-    },
-    status:              {type: String,                default: true },
-  
-}); 
+  },
+  {
+    timestamps: true,
+  }
+);
 
-reportsSchema.pre('save', function(done) {
-    this.updated_at = Date.now();
-    done();
-});
+const Report = mongoose.model("Report", ReportSchema);
 
-// Create the VehicleModel model
-const ReportsModel = mongoose.model('report', reportsSchema);
-
-// Export the VehicleModel model
-module.exports = ReportsModel;
+module.exports = Report;

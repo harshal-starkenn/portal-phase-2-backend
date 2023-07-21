@@ -24,6 +24,6 @@ AdminRoutes.get("/Get/:userId",AdminController.GetUserById);
 AdminRoutes.put("/update/:userId",AdminController.Update);
 
 // Delete User Routes
-AdminRoutes.delete("/delete/:userId",AdminController.Delete);
+AdminRoutes.put("/delete/:userId",AdminController.Delete);
 
 module.exports = AdminRoutes;

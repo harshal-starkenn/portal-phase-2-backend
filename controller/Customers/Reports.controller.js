@@ -11,112 +11,52 @@ app.use(bodypar.json());
 
 
 
-exports.getAllDriversReports1 = async (req, res) => {
-try {
-   // const { Driver_id } = req.params;
-    var drivers = await driversModel.find({});
-    if(!drivers) {
-        return res.status(400).json({
-            statuscode: 400,
-            status: "Failed",
-            message: "Driver Not Found",
-            data: {}, 
-        });
+exports.generateReport = async (req, res) => {
+  try {
+    const { fromDate, toDate, vehicleName, driverName } = req.body;
+
+    // Construct the query based on the provided parameters
+    let query = {
+      fromDate: new Date(fromDate),
+      toDate: new Date(toDate)
+    };
+
+    if (vehicleName) {
+      query['vehicleParams.CAS'] = vehicleName;
     }
-    return res.status(200).json({
-        statuscode: 200,
-        status: "ok",
-        message: "Driver Get Succesfully",
-        data: {
-            drivers
-        },
-    });
-} catch (error) {
-    console.log("Failed to Get Driver", error);
-    return res.status(500).json({
-        statuscode: 500,
-        status: "Error",
-        message: error.message,
-        data: {},
-    })
-}
+
+    if (driverName) {
+      query['vehicleParams.DMS'] = driverName;
+    }
+
+    // Count the total number of matching documents
+    const totalVehiclesDrivers = await Report.countDocuments(query);
+
+    // Prepare the report summary object
+    let reportSummary = {
+      title: 'Vehicle/Driver Report',
+      dateRange: {
+        fromDate: new Date(fromDate),
+        toDate: new Date(toDate)
+      },
+      totalVehiclesDrivers: totalVehiclesDrivers
+    };
+
+    if (vehicleName && !driverName) {
+      reportSummary.selectedVehicle = vehicleName;
+    }
+
+    if (!vehicleName && driverName) {
+      reportSummary.selectedDriver = driverName;
+    }
+
+    res.status(200).json({ reportSummary });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
 };
 
-exports.getAllDriversReports = async (req, res) => {
-    try {
-    const {tripId} = req.params;
-    
-      //const { startDate, endDate } = req.body;
-  
-      // const start = new Date(startDate);
-      // const end = new Date(endDate);
-      // end.setDate(end.getDate() + 1);
-      console.log(tripId);
-      const drivers = await reportsModel.find({
-        trip_id: tripId
-       // createdAt: { $gte: start, $lt: end },/
-       
-      });
-      totalCount = drivers.length;
-      if (!drivers) {
-        return res.status(400).json({
-          statuscode: 400,
-          status: "Failed",
-          message: "Driver Not Found",
-          data: {},
-        });
-      }
-  
-      return res.status(200).json({
-        statuscode: 200,
-        status: "ok",
-        TotalCount: totalCount,
-        message: "Drivers Retrieved Successfully",
-        data: {
-          drivers,
-        },
-      });
-    } catch (error) {
-      console.log("Failed to Get Drivers", error);
-      return res.status(500).json({
-        statuscode: 500,
-        status: "Error",
-        message: error.message,
-        data: {},
-      });
-    }
-  };
-  
-exports.getAllVehicalReports = async (req, res) => {
-try{
-
-    const data = await VehicleModel.find({});
-    if(!data) {
-        return res.status(400).json({
-            statuscode: 400,
-            status: "Failed",
-            message: "Vehicle Not Found",
-            data: {}, 
-        });
-}
-return res.status(200).json({
-    statuscode: 200,
-    status: "ok",
-    message: "Vehicle Get Succesfully",
-    data: {
-        data
-    },
-});
-} catch (error) {
-console.log("Failed to Get Vehicle", error);
-return res.status(500).json({
-    statuscode: 500,
-    status: "Error",
-    message: error.message,
-    data: {},
-})
-}
-};
 
 
                  

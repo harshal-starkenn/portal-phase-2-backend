@@ -14,7 +14,7 @@ const featuresetSchema = mongoose.Schema({
   selectCustomer: [
     {
       type: String,
-      required: true,
+    required: true,
     },
   ],
   mode: {

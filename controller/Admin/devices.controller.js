@@ -85,7 +85,7 @@ exports.getDeviceById = async (req, res) => {
 //========================{Get All Devices (totalCount)}===============//
 exports.GetAllDevices = async (req, res) => {
     try {
-        let device = await Devices.find({})
+        let device = await Devices.find({status: true})
         totalCount = device.length;
         if(!device){
             return res.status(400).json({
@@ -161,8 +161,10 @@ exports.UpdateDevice = async (req, res) => {
 //========================={Delete Devices}============================//
 exports.DeleteDevice = async (req, res) => {
     try {
+      // var createdAt = new Date()
+      // var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
         const { id } = req.params;
-        const device = await Devices.findOneAndDelete({ _id: id});
+        const device = await Devices.findOneAndUpdate({ device_id: id}, {status: false},);
 
         if(!device) {
             return res.status(404).json({ error: "Device Not Found"});
