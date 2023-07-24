@@ -11,7 +11,7 @@ const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cors());
-// getmqttData();
+getmqttData();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
