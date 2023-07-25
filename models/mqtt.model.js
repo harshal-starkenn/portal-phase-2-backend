@@ -41,7 +41,7 @@ const vehicleSchema = new mongoose.Schema({
 });
 
 // Create the Admin model
-const VehicleModel = mongoose.model('Vehicle_master', vehicleSchema);
+const VehicleModel = mongoose.model('Vehicle', vehicleSchema);
 //const VehicleModel = getDb().model('vehicle_master', VehicleSchema);
 
 

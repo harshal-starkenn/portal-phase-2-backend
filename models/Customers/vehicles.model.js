@@ -61,7 +61,7 @@ const vehicleSchema = new mongoose.Schema({
 });
 
 // Create the VehicleModel model
-const VehicleModel = mongoose.model('Vehicle_master', vehicleSchema);
+const VehicleModel = mongoose.model('Vehicle', vehicleSchema);
 
 // Export the VehicleModel model
 module.exports = VehicleModel;

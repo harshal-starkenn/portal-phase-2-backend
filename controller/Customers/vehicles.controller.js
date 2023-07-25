@@ -20,11 +20,10 @@ const { v4: uuidv4 } = require('uuid');
 exports.addVehicle = async (req, res) => {
    // const { user_id } = req.params;
   
-
   // Generate a new unique UUID
   const userId = uuidv4();
  
-    const checkQuery = {
+    const checkQuery = { 
       vehicle_registration: req.body.vehicle_registration
     };
   
@@ -41,8 +40,7 @@ exports.addVehicle = async (req, res) => {
           vehicle_registration: req.body.vehicle_registration,
           featureset: 1,
           status: req.body.status,
-        
-          "created_at": currentTimeIST,
+         "created_at": currentTimeIST,
           "updated_at": currentTimeIST,
          
 

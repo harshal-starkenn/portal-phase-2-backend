@@ -26,6 +26,14 @@ exports.AddDevice = async (req,res) => {
           }  else if  (!status) {
             return res.status(400).json({ message: 'status is required' });
           } 
+
+          const existingDevice = await Devices.findOne({device_id}); 
+
+          if (existingDevice ) {
+            return res.status(500).send('This Devices Already Taken ');
+          }
+
+
           var createdAt = new Date()
           var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
           const newDevice = new Devices({ 
