@@ -1,14 +1,13 @@
-const  driversModel  = require("../../models/Customers/Driver.model");
-const  VehicleModel = require("../../models/Customers/vehicles.model");
-const reportsModel = require("../../models/Customers/Reports.model")
-const express = require('express');
+const driversModel = require("../../models/Customers/Driver.model");
+const VehicleModel = require("../../models/Customers/vehicles.model");
+const reportsModel = require("../../models/Customers/Reports.model");
+const express = require("express");
 app = express();
 
 const bodypar = require("body-parser");
 
 app.use(bodypar.urlencoded({ extended: true }));
 app.use(bodypar.json());
-
 
 
 exports.generateReport = async (req, res) => {
@@ -58,5 +57,32 @@ exports.generateReport = async (req, res) => {
 };
 
 
-
-                 
+exports.getAllVehicalReports = async (req, res) => {
+  try {
+    const data = await VehicleModel.find({});
+    if (!data) {
+      return res.status(400).json({
+        statuscode: 400,
+        status: "Failed",
+        message: "Vehicle Not Found",
+        data: {},
+      });
+    }
+    return res.status(200).json({
+      statuscode: 200,
+      status: "ok",
+      message: "Vehicle Get Succesfully",
+      data: {
+        data,
+      },
+    });
+  } catch (error) {
+    console.log("Failed to Get Vehicle", error);
+    return res.status(500).json({
+      statuscode: 500,
+      status: "Error",
+      message: error.message,
+      data: {},
+    });
+  }
+};

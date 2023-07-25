@@ -1,49 +1,59 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const vehicleSchema = new mongoose.Schema({
+const mqttSchema = mongoose.Schema(
+  {
     trip_id: {
-        type: String,
-        unique: true,
-        required: true,
+      type: String,
+      required: true,
     },
     device_id: {
+      type: String,
+      required: true,
+    },
+    event: {
+      type: String,
+      required: true,
+    },
+    message: {
+      type: Number,
+      required: true,
+    },
+    timestamp: {
+      type: String,
+      required: true,
+    },
+    ignition: {
+      type: Number,
+      required: true,
+    },
+    td: {
+      dv: {
         type: String,
-        required: true, 
-    },
-    lat: {
+      },
+      lat: {
         type: String,
-        required: true,
-    },
-    lng: {
+      },
+      lng: {
         type: String,
-       // required: true,
-    },
-    ecu: {
+      },
+      spd: {
         type: String,
-       // required: true,
-    },
-    iot: {
+      },
+      rssi: {
         type: String,
-       // required: true,
+      },
     },
-    featureset: {
-        type: Number,
-        default: 1 ,
-    },
-    status: {
-        type: String,
-        required: true,
-    },
-    created_at: {
-        type: Date,
-        default: Date.now,
-    },
-});
 
-// Create the Admin model
-const VehicleModel = mongoose.model('Vehicle', vehicleSchema);
-//const VehicleModel = getDb().model('vehicle_master', VehicleSchema);
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
+const mqttModel = mongoose.model("tripdata", mqttSchema);
 
-// Export the Admin model
-module.exports = VehicleModel;
+module.exports = { mqttModel };

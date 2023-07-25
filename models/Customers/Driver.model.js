@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 
 const driverSchema = mongoose.Schema({
-  customerId: 
-  { type: String, required: true },
+  customerId: { type: String, required: true },
   vehicleId: { type: String, required: true },
   first_name: { type: String, required: true },
   last_name: { type: String, required: true },
@@ -12,8 +11,8 @@ const driverSchema = mongoose.Schema({
   mobile: { type: String, required: true },
   DOB: { type: String, required: true },
   rfid: { type: String, required: true },
- // status: { type: String, required: true },
- status:              {type: String,                default: true },
+  // status: { type: String, required: true },
+  status: { type: String, default: true },
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -34,4 +33,4 @@ const driverSchema = mongoose.Schema({
 
 const driversModel = mongoose.model("drivers", driverSchema);
 
-module.exports =  driversModel ;
+module.exports = driversModel;
