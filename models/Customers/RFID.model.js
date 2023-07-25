@@ -5,10 +5,12 @@ const RFIDSchema = new mongoose.Schema({
    
     RFID:{type: String},
     Driver_Name:{type: String,  required: true },
-    Age:{type: String,  required: true },
-    Contact_Number:{type: String,  required: true },
+    Age:{type: Number,  required: true },
+    Contact_Number:{type: Number,  required: true },
     Gender:{type: String,  required: true },
     status:              {type: String,                default: true },
+    created_at: { type: String, required: true },
+    updated_at: { type: String, required: true },
     //status:{type: String, required: true },
 });
 

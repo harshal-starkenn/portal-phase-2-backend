@@ -3,6 +3,7 @@ const express = require('express');
 app = express();
 const bodyPar = require("body-parser");
 const crypto = require('crypto');
+var moment = require('moment-timezone');
 
 app.use(bodyPar.urlencoded({ extended: true }));
 app.use(bodyPar.json());
@@ -37,13 +38,16 @@ exports.AddRFID = async (req, res) => {
       }  
 
 
-
+      var createdAt = new Date()
+      var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
       const newRFID = new DriverRFID({ 
         RFID: rfidCode, 
         Driver_Name,
         Age,
         Contact_Number,
         Gender,
+        "created_at": currentTimeIST,
+        "updated_at": currentTimeIST,
 
       });
       const savedRFID = await newRFID.save();

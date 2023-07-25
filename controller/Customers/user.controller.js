@@ -451,7 +451,6 @@ exports.ResetPassword = async (req, res) => {
     });
   }
 };
-
 //============================================{Reset-Password} [END]====================================================//
 
 //============================================{User-Logout} [START]=====================================================//
@@ -495,7 +494,7 @@ exports.Logout = async (req, res) => {
 //============================================{User-Logout} [END]=======================================================//
 
 //============================================{Upadte- User-Exp} [START]================================================//
-exports.UpdateUser1 = async (req, res) => {
+exports.UpdateUser = async (req, res) => {
   try {
     const { userId } = req.params;
     console.log(userId);
@@ -503,11 +502,7 @@ exports.UpdateUser1 = async (req, res) => {
     const {
       first_name,
       last_name,
-      full_name,
-      username,
       email,
-      user_type,
-      status,
       company_name,
       address,
       state,
@@ -515,27 +510,25 @@ exports.UpdateUser1 = async (req, res) => {
       pincode,
       phone
     } = req.body;
-
-    const updatedUser = await Users.findByIdAndUpdate( {userId},
-      //userId,
+    var createdAt = new Date()
+    var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
+    const updatedUser = await Users.findOneAndUpdate( {userId},
       {
         first_name,
         last_name,
-        full_name,
-        username,
         email,
-        user_type,
-        status,
         company_name,
         address,
         state,
         city,
         pincode,
-        phone
+        phone,
+        "updated_at": currentTimeIST,
       },
+      
       { new: true }
     );
-
+   
     if (!updatedUser) {
       return res.status(404).json({ code: 404, message: 'User not found' });
     }
@@ -549,7 +542,7 @@ exports.UpdateUser1 = async (req, res) => {
 //============================================{Upadte- User-Exp} [END]==================================================//
 
 //============================================{Upadte- User} [START]====================================================//
-exports.UpdateUser = async (req, res) => {
+exports.UpdateUser1 = async (req, res) => {
   const { field, value } = req.body;
   const { userId } = req.params;
  
@@ -632,7 +625,7 @@ exports.UpdateUser = async (req, res) => {
 exports.DeleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await Users.findOneAndDelete({ userId: userId});
+    const user = await Users.findOneAndUpdate({ userId: userId}, {status: false});
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -689,122 +682,3 @@ exports.getAllUser = async (req, res) => {
 }
 //============================================{Get-All-User} [END]======================================================//
     
-
-// // const hashPassword = async (password) => {
-// //   try {
-// //     const salt = await bcrypt.genSalt(10);
-// //     return await bcrypt.hash(password, salt);
-// //   } catch (error) {
-// //     throw new Error("Hashing failed", error);
-// //   }
-// // };
-
-
-
-// // exports.ResetPassword = async (req, res) => {
-// //   try {
-// //     const { token, newPassword, confirmPassword } = req.body;
-
-// //     if (!token || !newPassword || !confirmPassword) {
-// //       return res.status(400).json({
-// //         statuscode: 400,
-// //         status: "Not Process",
-// //         message: "Please Provide All Mandatory Fields",
-// //         data: {}
-// //       });
-// //     }
-
-
-
-// //     const transporter = nodemailer.createTransport(smtpConfig);
-
-// //     const digits = (token, count = 0) => {
-// //       if (token) {
-// //         return digits(Math.floor(token / 10), ++count);
-// //       };
-// //       return count;
-// //     };
-
-// //     if (digits(token) != 6) {
-// //       return res.status(404).json({
-// //         statuscode: 404,
-// //         status: "Failed",
-// //         message: "Enter 6 Digits of OTP",
-// //         data: {},
-// //       });
-// //     }
-// //     const user = await Users.findOne({
-// //       resetPasswordToken: token,
-// //       resetPasswordExpires: { $gt: Date.now() },
-// //     });
-// //     if (!user) {
-// //       return res.status(402).json({
-// //         statuscode: 402,
-// //         status: "Failed",
-// //         message: "Please Enter Valid Email OTP",
-// //         data: {}
-// //       });
-// //     }
-
-// //     if (newPassword !== confirmPassword) {
-// //       return res.status(403).json({
-// //         statuscode: 403,
-// //         status: "Failed",
-// //         message: "Passwords Didn't Match",
-// //         data: {}
-// //       });
-// //     }
-
-// //     const isValid = await Users.comparePasswords(newPassword, user.password);
-
-// //     if (isValid) {
-// //       return res.status(401).json({
-// //         statuscode: 401,
-// //         status: "Failed",
-// //         message: "Newly Entered Password Should Not Be Same As Previous Password",
-// //         data: {}
-// //       });
-// //     }
-
-// //     if (!CheckPassword(newPassword)) {
-// //       return res.status(405).send({
-// //         statuscode: 405,
-// //         status: "Failed",
-// //         message: "newPassword must be at least 6 characters which include one uppercase, one lowercase, one special character, and one digit",
-// //         data: {}
-// //       });
-// //     }
-
-// //     const hash = await Users.hashPassword(req.body.newPassword);
-// //     user.password = hash;
-// //     user.resetPasswordToken = null;
-// //     user.resetPasswordExpires = "";
-
-// //     await user.save();
-
-// //     // Send the password reset email
-// //     const emailOptions = {
-// //       from: 'sender-email@example.com',
-// //       to: user.email,
-// //       subject: 'Password Reset',
-// //       text: 'Your password has been successfully reset.'
-// //     };
-
-// //     await transporter.sendMail(emailOptions);
-
-// //     return res.status(200).json({
-// //       statuscode: 200,
-// //       status: "OK",
-// //       message: "Password Has Been Reset Successfully",
-// //       data: {}
-// //     });
-// //   } catch (error) {
-// //     console.error("reset-password-error", error);
-// //     return res.status(500).json({
-// //       statuscode: 500,
-// //       status: "Error",
-// //       message: error.message,
-// //       data: {}
-// //     });
-// //   }
-// // };

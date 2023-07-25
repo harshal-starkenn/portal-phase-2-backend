@@ -1,5 +1,5 @@
 const { client } = require("../config/mqtt");
-const async = require("async");
+//const async = require("async");
 const { mqttModel } = require("../models/mqtt.model");
 const Devices = require("../models/Admin/device.model");
 

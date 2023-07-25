@@ -1,7 +1,9 @@
 const Vehicle = require("../../models/Customers/vehicles.model");
 const Device = require("../../models/Admin/device.model");
 const express = require("express");
+var moment = require('moment-timezone');
 const app = express();
+
 
 const bodyParser = require('body-parser'); 
 
@@ -18,17 +20,17 @@ const { v4: uuidv4 } = require('uuid');
 exports.addVehicle = async (req, res) => {
    // const { user_id } = req.params;
   
-
   // Generate a new unique UUID
   const userId = uuidv4();
  
-    const checkQuery = {
+    const checkQuery = { 
       vehicle_registration: req.body.vehicle_registration
     };
   
     try {
       const existingVehicle = await Vehicle.findOne(checkQuery).exec();
-  
+      var createdAt = new Date()
+      var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
       if (existingVehicle) {
         res.status(500).send({ Error: "Vehicle Already Exists" });
       } else {
@@ -38,10 +40,10 @@ exports.addVehicle = async (req, res) => {
           vehicle_registration: req.body.vehicle_registration,
           featureset: 1,
           status: req.body.status,
-          created_by: new Date(),
-         // created_by: 'admin123', // Provide the created_by value
-          modified_by:  new Date(), // Provide the modified_by value
-          updated_by: new Date(), // Provide the updated_by value
+         "created_at": currentTimeIST,
+          "updated_at": currentTimeIST,
+         
+
         };
   
         if (req.body.dms && req.body.iot == null && req.body.ecu == null) {
@@ -246,7 +248,7 @@ exports.updateVehicle1 = async(req, res) => {
         vehicle_registration: req.body.vehicle_registration,
         featureset: 1,
         status: req.body.status,
-        updated_at: new Date()
+        
       };
   
       if (req.body.dms && req.body.iot == null && req.body.ecu == null) {
@@ -281,47 +283,49 @@ exports.updateVehicle1 = async(req, res) => {
 
 // Update Vehicle Info -START  Add Device(ECU, IOT, DMS)//
 exports.updateVehicle = async (req, res) => {
-    const { userId } = req.params;
-    const { vehicleId } = req.params;
+  const { userId } = req.params;
 
-  
-    try {
-      const existingVehicle = await Vehicle.findOne({ userId: userId }).exec();
+  try {
+    const existingVehicle = await Vehicle.findOne({ userId: userId }).exec();
+    const createdAt = new Date();
+    const currentTimeIST = moment.tz(createdAt, 'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
 
- 
-      if (!existingVehicle) {
-        res.status(404).send({ Error: "Vehicle not found for the given user" });
+    if (!existingVehicle) {
+      return res.status(404).send({ Error: 'Vehicle not found for the given user' });
+    } else {
+      const updateData = {};
+      if (req.body.dms && req.body.iot == null && req.body.ecu == null) {
+        updateData.dms = req.body.dms;
+      } else if (req.body.dms == null && req.body.iot && req.body.ecu) {
+        updateData.ecu = req.body.ecu;
+        updateData.iot = req.body.iot;
       } else {
-        const updateData = {};
-        if (req.body.dms && req.body.iot == null && req.body.ecu == null) {
-          updateData.dms = req.body.dms;
-        } else if (req.body.dms == null && req.body.iot && req.body.ecu) {
-          updateData.ecu = req.body.ecu;
-          updateData.iot = req.body.iot;
-        } else {
-          updateData.ecu = req.body.ecu;
-          updateData.iot = req.body.iot;
-          updateData.dms = req.body.dms;
-        }
-  
-        const updatedVehicle = await Vehicle.findOneAndUpdate(
-          {userId: userId},
-          { $set: updateData },
-          { new: true }
-        ).exec();
-  
-        res.status(200).send({ updatedVehicle });
+        updateData.ecu = req.body.ecu;
+        updateData.iot = req.body.iot;
+        updateData.dms = req.body.dms;
       }
-    } catch (err) {
-      res.status(500).send({ Error: err.message });
-    }                        
-  };
+
+      updateData.updated_at = currentTimeIST;
+
+      const updatedVehicle = await Vehicle.findOneAndUpdate(
+        { userId: userId },
+        { $set: updateData },
+        { new: true }
+      ).exec();
+
+      res.status(200).send({ updatedVehicle });
+    }
+  } catch (err) {
+    res.status(500).send({ Error: err.message });
+  }
+};
+
 
 // Delete Vehicle -START //
 exports.deleteVehicle = async (req, res) => {
   try {
     const { userId } = req.params;
-    const data = await Vehicle.findOneAndDelete({ userId });
+    const data = await Vehicle.findOneAndUpdate({ userId }, {status: false});
     return res.status(200).json({
       statusCode: 200,
       status: 'OK',
@@ -346,7 +350,7 @@ exports.AddDevice = async (req, res) => {
 }
 // Add Device (DMS, ECU, IOT) -- END //
 
-  //======================={GET devices by device type}=================//
+//======================={GET devices by device type}=================//
 exports.getDevicesByType = async (req, res) => {
     const { deviceType } = req.params;
     const { customerId } = req.params;

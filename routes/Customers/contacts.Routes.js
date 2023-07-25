@@ -13,7 +13,7 @@ ContactsRoutes.get("/get-Contacts/:Email", ContactsController.getContactsByEmail
 ContactsRoutes.put("/update-Contacts/:id", ContactsController.UpdateContacts);
 
 // Delete Contacts Data
-ContactsRoutes.delete("/delete-Contacts/:Email", ContactsController.DeleteContacts);
+ContactsRoutes.put("/delete-Contacts/:Email", ContactsController.DeleteContacts);
 
 
 module.exports = ContactsRoutes;

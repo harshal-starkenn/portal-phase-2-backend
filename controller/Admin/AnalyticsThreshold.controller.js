@@ -1,5 +1,6 @@
 const AnalyticsThresholds = require("../../models/Admin/AT.model");
 const Customers = require("../../models/Admin/adminCustomers");
+var moment = require('moment-timezone');
 
 const express = require('express');
 const bodyParser = require("body-parser");
@@ -37,7 +38,10 @@ exports.AddAnalytics = async (req, res) => {
       ) {
         return res.status(400).json({ message: "Missing required fields" });
       }
-  
+      
+      var createdAt = new Date()
+      var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
+    
       const new_AT = new AnalyticsThresholds({
         title:title,
         customer_id:customer_id,
@@ -63,7 +67,9 @@ exports.AddAnalytics = async (req, res) => {
         },
         newHalt:{
         duration,
-        }
+        },
+        "created_at": currentTimeIST,
+        "updated_at": currentTimeIST,
       });
 
 
@@ -94,7 +100,7 @@ exports.AddAnalytics = async (req, res) => {
           code: 400,
           message: "Validation error",
           errors: validationErrors,
-        });
+        }); 
       }
   
       res.status(500).json({
@@ -103,11 +109,12 @@ exports.AddAnalytics = async (req, res) => {
       });
     }
   };
+  
 
 //======================={GET All Customers data  }=======================//
 exports.GetCustomers_AT = async (req, res) => {
   try{
-      const data = await Customers.find({});
+      const data = await Customers.find({user_type: "2"});
     //  totalCount = data.length;
      // if (totalCount > 0) {
 

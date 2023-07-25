@@ -3,6 +3,7 @@ const express = require('express');
 app = express();
 const bodyPar = require("body-parser");
 
+
 app.use(bodyPar.urlencoded({ extended: true }));
 app.use(bodyPar.json());
 
@@ -120,10 +121,9 @@ const editDriver = async (req, res) => {
 const deleteDriver = async (req, res) => {
   const { driverId } = req.params;
   try {
-    const deleteDriver = await driversModel.findOneAndDelete(
-      { _id: driverId },
+    const deleteDriver = await driversModel.findOneAndUpdate({ _id: driverId }, {status: false},
       {
-        status: 0,
+       // status: 0,
         modifiedAt: new Date(),
         modifiedBy: "userId",
       },

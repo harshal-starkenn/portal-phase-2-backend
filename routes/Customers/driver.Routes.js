@@ -15,7 +15,7 @@ DriverRoutes.post("/add-driver", DriverController.addDriver);
 DriverRoutes.put("/edit-driver/:driverId", DriverController.editDriver);
 
 // Delete(disable) Driver By Driver ID
-DriverRoutes.delete("/delete-driver/:driverId", DriverController.deleteDriver);
+DriverRoutes.put("/delete-driver/:driverId", DriverController.deleteDriver);
 
 
 module.exports = DriverRoutes;

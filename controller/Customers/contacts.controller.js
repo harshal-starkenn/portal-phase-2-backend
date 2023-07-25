@@ -1,6 +1,7 @@
 const Contacts = require("../../models/Customers/contacts.model");
 const express = require("express");
 const app = express();
+var moment = require('moment-timezone');
 
 const bodyParser = require('body-parser'); 
 
@@ -30,7 +31,8 @@ exports.AddContacts = async (req,res) => {
           } else if  (!Gender) {
             return res.status(400).json({ message: 'Gender is required' });
           }  
-
+          var createdAt = new Date()
+          var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
           if (!isValidateEmail(Email)) {
             return res.status(401).send({
               statuscode: 401,
@@ -45,6 +47,8 @@ exports.AddContacts = async (req,res) => {
             Email,
             Contact_Number,
             Gender,
+         "created_at": currentTimeIST,
+         "updated_at": currentTimeIST,
 
           });
           const savedContacts = await newContacts.save();
@@ -93,9 +97,11 @@ exports.getContactsByEmail = async (req, res) => {
 //=========================={Update Contacts}=====================//
 exports.UpdateContacts = async (req, res) => {
   try {
+    var createdAt = new Date()
+    var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
     const { id } = req.params;
     console.log(id);
-
+   
     const {
       Name,
       Email,
@@ -110,6 +116,7 @@ exports.UpdateContacts = async (req, res) => {
         Email,
         Contact_Number,
         Gender,
+        "updated_at": currentTimeIST,
       },
       { new: true }
     );

@@ -37,6 +37,8 @@ const adminSchema = new mongoose.Schema({
     type: String,
    // required: true,
   },
+  created_at: { type: String, required: true },
+  updated_at: { type: String, required: true },
 });
 
 

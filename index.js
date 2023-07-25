@@ -30,6 +30,9 @@ const DevicesRouter = require("./routes/Admin/devices.Routes");
 //-----------------{Admin-AnalyticsThreshold}----//
 const ATRouter = require("./routes/Admin/AnalyticsThreshold.Routes");
 
+//-----------------{Admin - FeatureSet}----------//
+const { featuresetRouter } = require("./routes/Admin/featureset.route");
+
 //-----------------{Customer}--------------------//
 const Customers = require("./routes/Customers/User.Routes");
 
@@ -47,7 +50,7 @@ const ContactRouter = require("./routes/Customers/contacts.Routes");
 
 //-----------------{Customers-Reports}-----------//
 const ReportsRouter = require("./routes/Customers/reports.Routes");
-const { featuresetRouter } = require("./routes/Admin/featureset.route");
+//const { featuresetRouter } = require("./routes/Admin/featureset.route");
 const { db } = require("./config/db");
 
 //==================================={Middlewares--URL/Router-Connection}===============================//
@@ -55,7 +58,7 @@ const { db } = require("./config/db");
 //Featureset Apis
 app.use("/api/featureset", featuresetRouter);
 
-//------------------------{Admin}-----------------------------//
+//------------------------{Admin}-------Not USE----------------------//
 app.use("/api/Admin/remove", AdminRouter);
 
 //----------------------{Admin-Customer}-------------------//
