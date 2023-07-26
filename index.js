@@ -5,13 +5,13 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const cors = require("cors");
 var bodyParser = require("body-parser");
-const { getmqttData } = require("./controller/tripMqtt.controller");
+// const { getmqttData } = require("./controller/tripMqtt.controller");
 
 const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cors());
-getmqttData();
+// getmqttData();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
