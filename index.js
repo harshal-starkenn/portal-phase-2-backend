@@ -5,12 +5,12 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const cors = require("cors");
 var bodyParser = require("body-parser");
-<<<<<<< Updated upstream
+
 // const { getmqttData } = require("./controller/tripMqtt.controller");
-=======
-const { getmqttData } = require("./controller/tripMqtt.controller");
+
+//const { getmqttData } = require("./controller/tripMqtt.controller");
 const { db } = require("./config/db");
->>>>>>> Stashed changes
+
 
 const PORT = process.env.PORT;
 
