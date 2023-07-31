@@ -7,7 +7,7 @@ const VehiclesController = require("../../controller/Customers/vehicles.controll
 VehicleRoutes.get("/getAllVehicle", VehiclesController.getAllVehicles);
 
 // Add/Insert Vehicle By User Id
-VehicleRoutes.post("/addVehicle", VehiclesController.addVehicle);
+VehicleRoutes.post("/addVehicle/:userId", VehiclesController.addVehicle);
  
 // Edit/Update Vehicle Data By UserID/ VehicleId
 VehicleRoutes.put("/updateVehicle/:userId", VehiclesController.updateVehicle); //  NOT Working

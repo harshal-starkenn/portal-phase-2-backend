@@ -1,9 +1,9 @@
 const Vehicle = require("../../models/Customers/vehicles.model");
 const Device = require("../../models/Admin/device.model");
+const Users = require('../../models/Admin/adminCustomers');
 const express = require("express");
 var moment = require('moment-timezone');
 const app = express();
-
 
 const bodyParser = require('body-parser'); 
 
@@ -13,15 +13,14 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 const { v4: uuidv4 } = require('uuid');
 
- 
 //==========================={Adding vehicle Into DataBase By Store Procedure -- START======================//
 
 // Insert/Add Vehicle
 exports.addVehicle = async (req, res) => {
-   // const { user_id } = req.params;
+    const { userId } = req.params;
   
   // Generate a new unique UUID
-  const userId = uuidv4();
+ // const userId = uuidv4();
  
     const checkQuery = { 
       vehicle_registration: req.body.vehicle_registration
@@ -35,7 +34,7 @@ exports.addVehicle = async (req, res) => {
         res.status(500).send({ Error: "Vehicle Already Exists" });
       } else {
         let addData = {
-            userId, // Assuming this is the correct field name for the user ID
+          userId, //:req.body.userId, // Assuming this is the correct field name for the user ID
           vehicle_name: req.body.vehicle_name,
           vehicle_registration: req.body.vehicle_registration,
           featureset: 1,
@@ -69,8 +68,8 @@ exports.addVehicle = async (req, res) => {
 // Getting All Vehicle Data  --START//
 exports.getAllVehicles = async (req, res) => {
     try{
-       // const { user_id } = req.body
-        const data = await Vehicle.find({});
+        const { userId } = req.body
+        const data = await Vehicle.find({ }).sort({ created_at: -1 }).exec();
         totalCount = data.length;
         if (totalCount > 0) {
         // if(!device){
@@ -95,7 +94,7 @@ exports.getAllVehicles = async (req, res) => {
 exports.getVehicle = async (req, res) => {
     try {
       const { userId } = req.params;
-      const data = await Vehicle.findOne({ userId });
+      const data = await Vehicle.find({ userId })
       return res.status(200).json({
         statusCode: 200,
         status: 'OK',
@@ -320,7 +319,6 @@ exports.updateVehicle = async (req, res) => {
   }
 };
 
-
 // Delete Vehicle -START //
 exports.deleteVehicle = async (req, res) => {
   try {
@@ -357,7 +355,7 @@ exports.getDevicesByType = async (req, res) => {
   
     try {
       // let device = await Devices.find()
-      const devices = await Device.find({ device_type: deviceType ,customer_id: customerId });
+      const devices = await Device.find({ device_type: deviceType ,customer_id: customerId }).sort({ created_at: -1 }).exec();
       totalCount = devices.length;
       if (devices.length > 0) {
         res.status(200).json({
