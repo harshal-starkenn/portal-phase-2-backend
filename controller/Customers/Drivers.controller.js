@@ -29,7 +29,7 @@ const getAllDrivers = async (req, res) => {
   const { customerId } = req.params;
 
   try {
-    var drivers = await driversModel.find({});
+    var drivers = await driversModel.find({Status: "true"}).sort({ created_at: -1 }).exec();
     const totalCount = drivers.length;
 
     if (totalCount > 0) {

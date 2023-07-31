@@ -5,7 +5,12 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const cors = require("cors");
 var bodyParser = require("body-parser");
+<<<<<<< Updated upstream
 // const { getmqttData } = require("./controller/tripMqtt.controller");
+=======
+const { getmqttData } = require("./controller/tripMqtt.controller");
+const { db } = require("./config/db");
+>>>>>>> Stashed changes
 
 const PORT = process.env.PORT;
 
@@ -51,7 +56,7 @@ const ContactRouter = require("./routes/Customers/contacts.Routes");
 //-----------------{Customers-Reports}-----------//
 const ReportsRouter = require("./routes/Customers/reports.Routes");
 //const { featuresetRouter } = require("./routes/Admin/featureset.route");
-const { db } = require("./config/db");
+
 
 //==================================={Middlewares--URL/Router-Connection}===============================//
 
@@ -71,7 +76,7 @@ app.use("/api/Admin/Devices", DevicesRouter);
 app.use("/api/Admin/AnalyticsThreshold", ATRouter);
 
 //----------------------{Customer-Vehicles}----------------//As per required
-//app.use("/api/Admin/Vehicles", VehiclesRouter);
+app.use("/api/Customers/Vehicles", VehiclesRouter);
 
 //----------------------{Customer}-------------------------//
 app.use("/api/Customers", Customers);
@@ -83,7 +88,7 @@ app.use("/api/Customers/Vehicles", VehiclesRouter);
 app.use("/api/Customers/Drivers", DriverRouter);
 
 //----------------------{Customers-Driver-RFID}------------//
-app.use("/api/Customers/Drivers/DriverRFID", RFIDRouter);
+app.use("/api/Customers/Driver/DriverRFID", RFIDRouter);
 
 //----------------------{Customers-Contacts}---------------//
 app.use("/api/Customers/Contacts", ContactRouter);

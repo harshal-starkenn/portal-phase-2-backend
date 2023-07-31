@@ -1,4 +1,4 @@
-const User = require("../../models/Admin/adminCustomers");
+const  User  = require("../../models/Admin/adminCustomers");
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
@@ -23,6 +23,8 @@ function isValidateEmail(Vemail) {
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(Vemail).toLowerCase());
 }
+
+
 
 //============================================{Add- User} [START]======================================================//
 exports.Signup = async (req, res) => {
@@ -87,14 +89,10 @@ exports.Signup = async (req, res) => {
     } else if (!phone) {
       return res.status(400).json({ message: "PHONE is required" });
     }
-    //---------------------Check filed's required---END----------------------------------------------------//
+    //-----------------------------------Check filed's required---END----------------------------------------------------//
 
-    //-------------------------Check if password and confirm password match--------------------------//
-    // else if (password !== confirmPassword) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: 'Password and confirm password do not match' });
-    // }
+    //-----------------------------------Check if password and confirm password match-----------------------------------//
+
 
     if (password != confirmPassword) {
       return res.status(402).json({
@@ -116,18 +114,15 @@ exports.Signup = async (req, res) => {
       });
     }
 
-    //--------------------------Hash the password And Confirm Password-------------------------------//
-    //  const hashedPassword = await User.hashPassword(password, 10);
-    //  const confirmHashPassword = await User.hashPassword(confirmPassword,10);
-    // var user = await User.findOne({ email: email });
+    //-----------------------------------Hash the password And Confirm Password-------------------------------//
     var hash = await User.hashPassword(password);
-    //==============Generate a new unique UUID=============//
+    //-----------------------------------Generate a new unique UUID------------------------------------------//
     const id = uuidv4();
-    // const userId = id();
+
+//---------------------------------------Date & Time--------------------------------------------------------//
     var createdAt = new Date();
-    var currentTimeIST = moment
-      .tz(createdAt, "Asia/Kolkata")
-      .format("YYYY-MM-DD HH:mm:ss a");
+    var currentTimeIST = moment.tz(createdAt, "Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss a");
+
     let code = Math.floor(100000 + Math.random() * 900000);
 
     let expiry = Date.now() + 60 * 1000 * 120; //120 mins in ms
@@ -392,7 +387,7 @@ exports.Delete = async (req, res) => {
 //============================================{Get- User} [START]======================================================//
 exports.Get = async (req, res) => {
   try {
-    const data = await User.find({ status: true });
+    const data = await User.find({ status: true }).sort({ created_at: -1 }).exec();
     totalCount = data.length;
     if (totalCount > 0) {
       return res.status(200).json({

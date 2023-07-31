@@ -33,30 +33,31 @@ exports.AddDevice = async (req, res) => {
       return res.status(500).send("This Devices Already Taken ");
     }
 
-    var createdAt = new Date();
-    var currentTimeIST = moment
-      .tz(createdAt, "Asia/Kolkata")
-      .format("YYYY-MM-DD HH:mm:ss a");
-    const newDevice = new Devices({
-      device_id,
-      device_type,
-      customer_id,
-      sim_number,
-      status,
-      created_at: currentTimeIST,
-      updated_at: currentTimeIST,
-    });
-    const savedDevice = await newDevice.save();
-    console.log("User saved successfully:", savedDevice);
-    res.status(200).json({
-      code: 200,
-      message: "Devices Added Successfully",
-      addDevices: savedDevice,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ code: 500, message: "Failed to add Devices" });
-  }
+          if (existingDevice ) {
+            return res.status(500).send('This Devices Already Taken ');
+          }
+
+
+          var createdAt = new Date()
+          var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
+          const newDevice = new Devices({ 
+            device_id,
+            device_type,
+            customer_id,
+            sim_number,
+            status,
+         "created_at": currentTimeIST,
+         "updated_at": currentTimeIST,
+
+
+          });
+          const savedDevice = await newDevice.save();
+          console.log('Devices saved successfully:', savedDevice);
+          res.status(200).json({ code: 200, message: 'Devices Added Successfully', addDevices: savedDevice });
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({ code: 500, message: 'Failed to add Devices' });
+        }
 };
 
 //========================{Get Device By ID}===========================//
@@ -95,37 +96,42 @@ exports.getDeviceById = async (req, res) => {
 
 //========================{Get All Devices (totalCount)}===============//
 exports.GetAllDevices = async (req, res) => {
-  try {
-    let device = await Devices.find({ status: true });
-    totalCount = device.length;
-    if (!device) {
-      return res.status(400).json({
-        statuscode: 400,
-        status: "Failed",
-        message: "Devices data Not Found",
-        data: {},
-      });
-    }
-    if (totalCount > 0) {
-      return res.status(200).json({
-        statuscode: 200,
-        status: "OK",
-        TotalCount: totalCount,
-        message: "All Devices Data Get Successfull",
-        data: {
-          device,
-        },
-      });
-    }
-  } catch (error) {
-    console.error("Failed to Get Devices", error);
-    return res.status(500).json({
-      statuscode: 500,
-      status: "Error",
-      message: error.message,
-      data: {},
-    });
-  }
+    try {
+        let device = await Devices.find({status: true}).sort({ created_at: -1 }).exec();
+        totalCount = device.length;
+        if(!device){
+            return res.status(400).json({
+                statuscode: 400,
+                status: "Failed",
+                message: "Devices data Not Found",
+                data: {},
+            });
+        }
+        if (totalCount > 0) {
+
+        
+        return res.status(200).json({
+            statuscode: 200,
+            status: "OK",
+            TotalCount: totalCount,
+            message: "All Devices Data Get Successfull",
+            data: {
+             
+             device
+               
+            },
+        });
+      }
+        
+        } catch (error) {
+        console.error("Failed to Get Devices", error);
+        return res.status(500).json({
+            statuscode: 500,
+            status: "Error",
+            message: error.message,
+            data: {},
+        });
+        }
 };
 
 //========================={Update Devices}============================//
@@ -186,7 +192,7 @@ exports.getDevicesByType = async (req, res) => {
 
   try {
     // let device = await Devices.find()
-    const devices = await Devices.find({ device_type: deviceType });
+    const devices = await Devices.find({ device_type: deviceType }).sort({ created_at: -1 }).exec();
     totalCount = devices.length;
     if (devices.length > 0) {
       res.status(200).json({
@@ -213,8 +219,8 @@ exports.getDevicesByType = async (req, res) => {
 
 //======================={GET All User data  }=======================//
 exports.GetUser = async (req, res) => {
-  try {
-    const data = await User.find({});
+  try{
+      const data = await User.find({status: "true", user_type: "2"}).sort({ created_at: -1 }).exec();
     //  totalCount = data.length;
     // if (totalCount > 0) {
 

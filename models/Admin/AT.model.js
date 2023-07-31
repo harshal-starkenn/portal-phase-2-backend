@@ -3,7 +3,12 @@ const mongoose = require("mongoose");
 const AT_Schema = new mongoose.Schema({
     title:       {type: String,  required: true},
     //isFloat({ min: 0, max: 100 })
-    customer_id: {type: String,  required: true},
+    customer_id: 
+        {
+          type: String,
+        required: true,
+        },
+      
         newScore:{
     brake:        {type: Number,  required: true,min: 0, max: 1000 },
     tailgating:   {type: Number,  required: true,min: 0, max: 1000 },
@@ -20,10 +25,10 @@ const AT_Schema = new mongoose.Schema({
     ttc_difference_percentage:   {type: Number,  required: true,min: 0, max: 100 },
         },
         newLB:{
-    total_distance:   {type: Number,  required: true,min: 0, max: 1000 },
+    total_distance:   {type: Number,  required: true,min: 0, max: 10000 },
         },
         newHalt:{
-    duration:   {type: Number,  required: true,min: 0, max: 1000 },
+    duration:   {type: Number,  required: true,min: 1, max: 1000 },
     
         },
         status:              {type: String,                default: true },
