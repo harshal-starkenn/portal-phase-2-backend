@@ -180,7 +180,7 @@ const featuresetCustomerAssignList = async (req, res) => {
       return;
     }
 
-    const listOfUsers = await User.find({ user_type: "2" }); // Fetch users with user_type="2"
+    const listOfUsers = await User.find({ user_type: "2", status: "true" }); // Fetch users with user_type="2"
 
     const listOfAssignCustomer = listOfUsers.filter((customer) =>
       featureSetCustomers.selectCustomer.includes(customer.userId)
@@ -201,7 +201,7 @@ const featuresetCustomerAssignList = async (req, res) => {
 const featuresetCustomerNotAssignList = async (req, res) => {
   const { featureSetId } = req.params;
   try {
-    const getUsersList = await User.find({ user_type: "2" }); // Fetch users with user_type="2"
+    const getUsersList = await User.find({ user_type: "2", status: true }); // Fetch users with user_type="2"
 
     const featuresetCustomers = await featuresetModel.findOne({ featureSetId });
     const filternotAssignCustomers = getUsersList?.filter(

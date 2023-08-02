@@ -11,7 +11,7 @@ const db = async () => {
       .then((res) => {
         console.log("MongoDB connected Successfully");
       })
-      .catch((er) => {
+      .catch((err) => {
         console.log(err);
       });
   } catch (err) {
