@@ -4,16 +4,16 @@ const ContactsController = require("../../controller/Customers/contacts.controll
 
 
 // Add/Insert Contacts Data
-ContactsRoutes.post("/add-Contacts", ContactsController.AddContacts);
+ContactsRoutes.post("/add-contacts", ContactsController.AddContacts);
 
 // Get Contacts Data 
-ContactsRoutes.get("/get-Contacts/:Email", ContactsController.getContactsByEmail);
+ContactsRoutes.get("/get-contacts/:email", ContactsController.getContactsByEmail);
 
 // Update Contacts Data
-ContactsRoutes.put("/update-Contacts/:id", ContactsController.UpdateContacts);
+ContactsRoutes.put("/update-contacts/:id", ContactsController.UpdateContacts);
 
 // Delete Contacts Data
-ContactsRoutes.put("/delete-Contacts/:Email", ContactsController.DeleteContacts);
+ContactsRoutes.put("/delete-contacts/:email", ContactsController.DeleteContacts);
 
 
 module.exports = ContactsRoutes;

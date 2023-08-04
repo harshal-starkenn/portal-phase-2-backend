@@ -6,6 +6,7 @@ const { generateJwt } = require("../../auth/JWT");
 const storage = require("node-sessionstorage");
 var bodyParser = require("body-parser");
 var moment = require("moment-timezone");
+const Joi = require('joi');
 
 app.use(
   bodyParser.urlencoded({
@@ -17,149 +18,73 @@ app.use(cookieParser());
 
 const { v4: uuidv4 } = require("uuid");
 
-//============={Email=Validation}===============//
-function isValidateEmail(Vemail) {
-  const re =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(Vemail).toLowerCase());
-}
-
-
-
 //============================================{Add- User} [START]======================================================//
 exports.Signup = async (req, res) => {
   try {
-    const {
-      first_name,
-      last_name,
-      email,
-      password,
-      confirmPassword,
-      user_type,
-    } = req.body;
-    const { company_name, address, state, city, pincode, phone } = req.body;
+    const schema = Joi.object({
+      first_name: Joi.string().required(),
+      last_name: Joi.string().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().min(6).required(),
+      confirmPassword: Joi.string().valid(Joi.ref('password')).required(), 
+      user_type: Joi.string().required(),
+      company_name: Joi.string().required(),
+      address: Joi.string().required(),
+      state: Joi.string().required(),
+      city: Joi.string().required(),
+      pincode: Joi.string().required(),
+      phone: Joi.string().required(),
+    });
 
-    //--------------------Check Existing Email---------------------//
-    const existingCustomerEmail = await User.findOne({ email });
-    //--------------------Check Existing User Name-----------------//
-    //const existingCustomerUserName = await User.findOne({  username });
-    //--------------------Check Existing Phone---------------------//
-    const existingCustomerPhone = await User.findOne({ phone });
+    const validation = schema.validate(req.body);
 
-    if (!isValidateEmail(email)) {
-      return res.status(401).send({
-        statuscode: 401,
-        status: "Failed",
-        message: "Email Is Invalid",
-        data: {},
-      });
+    if (validation.error) {
+      return res.status(400).json({ message: validation.error.details[0].message });
     }
+
+    const existingCustomerEmail = await User.findOne({ email: req.body.email });
+    const existingCustomerPhone = await User.findOne({ phone: req.body.phone });
 
     if (existingCustomerEmail) {
-      return res.status(500).send("This Email Already Taken ");
+      return res.status(409).json({ message: "This Email Already Used" });
     } else if (existingCustomerPhone) {
-      return res.status(500).send("This Phone Number Already Taken");
+      return res.status(409).json({ message: "This Phone Number Already Used" });
     }
 
-    //---------------------Check filed's required---START-----------------------------------------//
-    if (!first_name) {
-      return res.status(400).json({ message: "FIRST_NAME is required" });
-    } else if (!last_name) {
-      return res.status(400).json({ message: "LAST_NAME is required" });
-    } else if (!email) {
-      return res.status(400).json({ message: "EMAIL is required" });
-    } else if (!phone) {
-      return res.status(400).json({ message: "PHONE Numberis required" });
-    } else if (!password) {
-      return res.status(400).json({ message: "PASSWORD is required" });
-    } else if (!confirmPassword) {
-      return res.status(400).json({ message: "CONFIRM_PASSWORD is required" });
-    } else if (!user_type) {
-      return res.status(400).json({ message: "USER TYPE is required" });
-    } else if (!company_name) {
-      return res.status(400).json({ message: "COMPANY_NAME is required" });
-    } else if (!address) {
-      return res.status(400).json({ message: "ADDRESS is required" });
-    } else if (!state) {
-      return res.status(400).json({ message: "STATE is required" });
-    } else if (!city) {
-      return res.status(400).json({ message: "CITY is required" });
-    } else if (!pincode) {
-      return res.status(400).json({ message: "PINCODE is required" });
-    } else if (!phone) {
-      return res.status(400).json({ message: "PHONE is required" });
-    }
-    //-----------------------------------Check filed's required---END----------------------------------------------------//
-
-    //-----------------------------------Check if password and confirm password match-----------------------------------//
-
-
-    if (password != confirmPassword) {
-      return res.status(402).json({
-        statuscode: 402,
-        status: "Failed",
-        message: "Passwords MisMatched",
-        data: {},
-      });
-    }
-
-    var user = await User.findOne({ email: email });
-
-    if (user) {
-      return res.status(404).json({
-        statuscode: 404,
-        status: "Failed",
-        message: "Email Is Already In Use",
-        data: {},
-      });
-    }
-
-    //-----------------------------------Hash the password And Confirm Password-------------------------------//
-    var hash = await User.hashPassword(password);
-    //-----------------------------------Generate a new unique UUID------------------------------------------//
+    const hash = await User.hashPassword(req.body.password);
     const id = uuidv4();
-
-//---------------------------------------Date & Time--------------------------------------------------------//
-    var createdAt = new Date();
-    var currentTimeIST = moment.tz(createdAt, "Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss a");
-
-    let code = Math.floor(100000 + Math.random() * 900000);
-
-    let expiry = Date.now() + 60 * 1000 * 120; //120 mins in ms
-
-    //const sendCode = await sendEmail(email, code, 1);
-
-    console.log("code", code);
+    const currentTimeIST = new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
 
     const newUser = new User({
       userId: id,
-      first_name,
-      last_name,
-      email,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      email: req.body.email,
       password: hash,
       confirmPassword: hash,
-      user_type,
-      company_name,
-      address,
-      state,
-      city,
-      pincode,
-      phone,
-
+      user_type: req.body.user_type,
+      company_name: req.body.company_name,
+      address: req.body.address,
+      state: req.body.state,
+      city: req.body.city,
+      pincode: req.body.pincode,
+      phone: req.body.phone,
       created_at: currentTimeIST,
       updated_at: currentTimeIST,
     });
 
     const savedUser = await newUser.save();
-    console.log("User saved successfully:", savedUser);
-    res.status(200).json({
-      code: 200,
-      message: "User Added Successfully",
+    console.log("Customer Created successfully:");
+    res.status(201).json({
+      code: 201,
+      message: "Customer Created Successfully",
       addUser: savedUser,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ code: 500, message: "Failed to add User" });
+    res.status(500).json({ code: 500, message: "Failed to Create Customer" });
   }
 };
 //============================================{ADD- User} [END]========================================================//
@@ -173,7 +98,7 @@ exports.Login = async (req, res) => {
     var user = await User.findOne({ email: email });
     await User.findOne({ email: email })
       .then((data) => {
-        console.log(data, "okkkk");
+       // console.log(data, "okkkk");
       })
       .catch((err) => {
         console.log(err, "errrorrrrr");
@@ -182,8 +107,8 @@ exports.Login = async (req, res) => {
     if (!user) {
       return res.status(402).json({
         statuscode: 402,
-        status: "Not Found",
-        message: "Wrong Email",
+        status: "Failed",
+        message: "Enter Wrong Email",
         data: {},
       });
     }
@@ -247,7 +172,7 @@ exports.Login = async (req, res) => {
     return res.status(200).json({
       statuscode: 200,
       status: "OK",
-      message: "User Logged In Successfully",
+      message: "Customer Logged In Successfully",
       accessToken: token,
       data: {
         active: user.active,
@@ -283,7 +208,7 @@ exports.Logout = async (req, res) => {
       return res.status(404).json({
         statuscode: 404,
         status: "Not Found",
-        message: "User not found",
+        message: "Customer Not Found",
         data: {},
       });
     }
@@ -295,7 +220,7 @@ exports.Logout = async (req, res) => {
     return res.status(200).json({
       statuscode: 200,
       status: "OK",
-      message: "User logged out successfully",
+      message: "Customer logged out successfully",
       data: {},
     });
   } catch (error) {
@@ -327,10 +252,12 @@ exports.Update = async (req, res) => {
       pincode,
       phone,
     } = req.body;
+
+//==========================Date and Time============================================//
     var createdAt = new Date();
-    var currentTimeIST = moment
-      .tz(createdAt, "Asia/Kolkata")
-      .format("YYYY-MM-DD HH:mm:ss a");
+    var currentTimeIST = moment.tz(createdAt, "Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss a");
+
+
     const updatedUser = await User.findOneAndUpdate(
       { userId },
       {
@@ -350,15 +277,15 @@ exports.Update = async (req, res) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ code: 404, message: "User not found" });
+      return res.status(404).json({ code: 404, message: "Customer Not Found" });
     }
 
     res
       .status(200)
-      .json({ code: 200, message: "User updated successfully", updatedUser });
+      .json({ code: 200, message: "Customer Updated Successfully", updatedUser });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ code: 500, message: "Failed to update User" });
+    res.status(500).json({ code: 500, message: "Failed to Update Customer" });
   }
 };
 //============================================{Upadte- User} [END]=====================================================//
@@ -394,12 +321,12 @@ exports.Get = async (req, res) => {
         statuscode: 200,
         status: "OK",
         TotalCount: totalCount,
-        message: "User Get Successfull",
+        message: "Customer Get Successfull",
         data,
       });
     }
   } catch (err) {
-    console.log(err, "error in Vehicle Data");
+    console.log(err, "error in Customer Data");
   }
 };
 //============================================{Get- User} [END]========================================================//

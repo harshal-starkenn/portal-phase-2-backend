@@ -108,7 +108,9 @@ exports.AddAnalytics = async (req, res) => {
       });
     }
   };
-  // exports.AddAnalytics1 = async (req, res) => {
+
+  
+// exports.AddAnalytics1 = async (req, res) => {
   //   try {
   //     const customers = req.body; // Assuming an array of customers in the request body
   
@@ -218,7 +220,7 @@ exports.AddAnalytics = async (req, res) => {
 //=======================================GET All Customers data -=======================================================//
 exports.GetCustomers_AT = async (req, res) => {
   try{
-      const data = await Customers.find({user_type: "0", status: "true"}).sort({ created_at: -1 }).exec();
+      const data = await Customers.find({user_type: "2", status: "true"}).sort({ created_at: -1 }).exec();
     //  totalCount = data.length;
      // if (totalCount > 0) {
 
@@ -278,9 +280,9 @@ exports.GetAnalyticsThreshold = async (req, res) => {
 exports.Update_AT = async (req, res) => {
   try {
     const{title,customer_id} = req.body;
-    const{ brake, tailgating, rash_driving, sleep_alert, over_speed, green_zone } = req.body;
-    const{ minimum_distance, minimum_driver_rating } = req.body;
-    const{ ttc_difference_percentage } = req.body;
+    const{brake, tailgating, rash_driving, sleep_alert, over_speed, green_zone } = req.body;
+    const{minimum_distance, minimum_driver_rating } = req.body;
+    const{ttc_difference_percentage } = req.body;
     const{total_distance} = req.body;
     const{duration} = req.body;
     
@@ -311,11 +313,11 @@ exports.Update_AT = async (req, res) => {
       });
     }
 
-    console.log("AT Score Updated Successfully!", updated_AT);
+    console.log("AT Analytics Thresholds Updated Successfully!", updated_AT);
 
     const response = {
       code: 200,
-      message: "AT Score Updated Successfully",
+      message: "AT Analytics Thresholds Updated Successfully",
       updated_AT,
     };
 
@@ -336,7 +338,7 @@ exports.Update_AT = async (req, res) => {
 
     res.status(500).json({
       code: 500,
-      message: "Failed to update scores",
+      message: "Failed to update Analytics Thresholds",
     });
   }
 };

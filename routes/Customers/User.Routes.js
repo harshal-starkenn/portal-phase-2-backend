@@ -10,10 +10,10 @@ UserRoutes.post("/signup",UserController.Signup);
 UserRoutes.post("/login",UserController.Login);
 
 // Forgot Passwword Routes
-UserRoutes.post("/forgotPassword",UserController.ForgotPassword)
+UserRoutes.post("/forgot-password",UserController.ForgotPassword)
 
 // Reset Password Routes
-UserRoutes.post("/resetPassword",UserController.ResetPassword);
+UserRoutes.post("/reset-password",UserController.ResetPassword);
 
 // User Activate 
 UserRoutes.post("/activate", UserController.Activate);
@@ -22,13 +22,13 @@ UserRoutes.post("/activate", UserController.Activate);
 UserRoutes.post("/logout",UserController.Logout); // Not Working
 
 // Update User Routes
-UserRoutes.put("/updateUser/:userId",UserController.UpdateUser);
+UserRoutes.put("/update-user/:userId",UserController.UpdateUser);
 
 // Delete User Routes
-UserRoutes.put("/deleteUser/:userId",UserController.DeleteUser);
+UserRoutes.put("/delete-user/:userId",UserController.DeleteUser);
 
 // Get User Routes
-UserRoutes.get("/getUser/:userId",UserController.GetUser);
+UserRoutes.get("/get-user/:userId",UserController.GetUser);
 
 
 module.exports = UserRoutes;

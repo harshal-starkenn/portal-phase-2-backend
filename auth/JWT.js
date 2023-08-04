@@ -3,10 +3,8 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
-//const cookieParser = require("cookie-parser");
 
 
-//app.use(cookieParser());
 const options = {
     expiresIn: "1h",
   };

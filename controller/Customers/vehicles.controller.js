@@ -343,7 +343,7 @@ exports.deleteVehicle = async (req, res) => {
 // Delete Vehicle -END //1
 
 // Add Device (DMS, ECU, IOT) -- START //
-exports.AddDevice = async (req, res) => {
+exports.AddAssignDevice = async (req, res) => {
   const { dms, ecu, iot } = req.body;
 }
 // Add Device (DMS, ECU, IOT) -- END //

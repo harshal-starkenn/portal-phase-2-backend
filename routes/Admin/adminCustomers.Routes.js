@@ -6,19 +6,19 @@ const Admin = require("../../models/Admin/admin.model");
 
 
 // SignUp user(Insert Data) Routes
-AdminRoutes.post("/Signup",AdminController.Signup);
+AdminRoutes.post("/signup",AdminController.Signup);
 
 // Login User Routes
-AdminRoutes.post("/Login",AdminController.Login);
+AdminRoutes.post("/login",AdminController.Login);
 
 // Logout User Routes
-AdminRoutes.get("/Logout",validateToken,AdminController.Logout);
+AdminRoutes.get("/logout",validateToken,AdminController.Logout);
 
 // Get All User Routes
-AdminRoutes.get("/GetAll",AdminController.Get);
+AdminRoutes.get("/get-all",AdminController.Get);
 
 // Get User By Id Routes
-AdminRoutes.get("/Get/:userId",AdminController.GetUserById);
+AdminRoutes.get("/get/:userId",AdminController.GetUserById);
 
 // Update User Routes
 AdminRoutes.put("/update/:userId",AdminController.Update);

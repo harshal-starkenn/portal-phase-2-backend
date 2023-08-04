@@ -4,18 +4,18 @@ const ATController = require("../../controller/Admin/AnalyticsThreshold.controll
 
 
 // Analytics Threshold Routes //
-ATRoutes.post("/AddAnalytics",ATController.AddAnalytics);
+ATRoutes.post("/add-analytics",ATController.AddAnalytics);
 
 // Get Customers 
-ATRoutes.get("/GetCustomers-AT",ATController.GetCustomers_AT);
+ATRoutes.get("/get-customers-at",ATController.GetCustomers_AT);
 
 // Update Analytics Threshold Routes //
-ATRoutes.put("/updateCustomers-AT/:customer_id",ATController.Update_AT);
+ATRoutes.put("/update-customers-at/:customer_id",ATController.Update_AT);
 
 // Delete Analytics Threshold Routes //
-ATRoutes.delete("/deleteCustomers-AT/:customer_id",ATController.Delete_AT);
+ATRoutes.put("/delete-customers-at/:customer_id",ATController.Delete_AT);
 
 // Update Analytics Threshold Routes //
-ATRoutes.get("/getAnalyticsThreshold",ATController.GetAnalyticsThreshold);
+ATRoutes.get("/get-analytics-threshold",ATController.GetAnalyticsThreshold);
 
 module.exports = ATRoutes;
