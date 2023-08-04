@@ -64,37 +64,37 @@ const ReportsRouter = require("./routes/Customers/reports.Routes");
 app.use("/api/featureset", featuresetRouter);
 
 //------------------------{Admin}-------Not USE----------------------//
-app.use("/api/Admin/remove", AdminRouter);
+app.use("/api/admin/remove", AdminRouter);
 
 //----------------------{Admin-Customer}-------------------//
-app.use("/api/Admin", AdminCustomerRouter);
+app.use("/api/admin", AdminCustomerRouter);
 
 //----------------------{Admin-Device}---------------------//
-app.use("/api/Admin/Devices", DevicesRouter);
+app.use("/api/admin/devices", DevicesRouter);
 
 //----------------------{Admin-Analytics-ThresHold}--------//
-app.use("/api/Admin/AnalyticsThreshold", ATRouter);
+app.use("/api/admin/analytics-threshold", ATRouter);
 
 //----------------------{Customer-Vehicles}----------------//As per required
-app.use("/api/Customers/Vehicles", VehiclesRouter);
+app.use("/api/customers/vehicles", VehiclesRouter);
 
 //----------------------{Customer}-------------------------//
-app.use("/api/Customers", Customers);
+app.use("/api/customers", Customers);
 
 //----------------------{Customer-Vehicles}----------------//
-app.use("/api/Customers/Vehicles", VehiclesRouter);
+app.use("/api/customers/vehicles", VehiclesRouter);
 
 //----------------------{Customers-Drivers}----------------//
-app.use("/api/Customers/Drivers", DriverRouter);
+app.use("/api/customers/drivers", DriverRouter);
 
 //----------------------{Customers-Driver-RFID}------------//
-app.use("/api/Customers/Driver/DriverRFID", RFIDRouter);
+app.use("/api/customers/driver/driver-rfid", RFIDRouter);
 
 //----------------------{Customers-Contacts}---------------//
-app.use("/api/Customers/Contacts", ContactRouter);
+app.use("/api/customers/contacts", ContactRouter);
 
 //----------------------{Customers-Reports}----------------//
-app.use("/api/Customers/Reports", ReportsRouter);
+app.use("/api/customers/reports", ReportsRouter);
 
 //---------------------------Data-Base Connection Start----------------------------//
 db();

@@ -4,7 +4,7 @@ const RFIDController = require("../../controller/Customers/DriverRFID.controller
 
 
 // Add/Insert Driver RFID Data
-RFIDRoutes.post("/add-RFID", RFIDController.AddRFID);
+RFIDRoutes.post("/add-rfid", RFIDController.AddRFID);
 
 // Update Driver RFID Data
 //RFIDRoutes.put("/update-RFID", RFIDController.updateRFID);

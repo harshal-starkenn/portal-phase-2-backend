@@ -3,8 +3,8 @@ const User = require("../../models/Admin/adminCustomers");
 const express = require("express");
 var moment = require("moment-timezone");
 app = express();
-
 const bodyParser = require("body-parser");
+const Joi = require("joi");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -12,53 +12,54 @@ app.use(bodyParser.json());
 //========================{Add Device}================================//
 exports.AddDevice = async (req, res) => {
   try {
-    const { device_id, device_type, customer_id, sim_number, status } =
-      req.body;
+    const schema = Joi.object({
+      device_id: Joi.string().required(),
+      device_type: Joi.string().required(),
+      customer_id: Joi.string().required(),
+      sim_number: Joi.string().required(),
+      status: Joi.string().required(),
+    });
 
-    if (!device_id) {
-      return res.status(400).json({ message: "device_id is required" });
-    } else if (!device_type) {
-      return res.status(400).json({ message: "device_type is required" });
-    } else if (!customer_id) {
-      return res.status(400).json({ message: "customer_id is required" });
-    } else if (!sim_number) {
-      return res.status(400).json({ message: "sim_number is required" });
-    } else if (!status) {
-      return res.status(400).json({ message: "status is required" });
+    const { error, value } = schema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
     }
+
+    const { device_id, device_type, customer_id, sim_number, status } = value;
 
     const existingDevice = await Devices.findOne({ device_id });
+    const existingSimNumber = await Devices.findOne({ sim_number });
 
     if (existingDevice) {
-      return res.status(500).send("This Devices Already Taken ");
+      return res.status(500).send("This Device Already Taken");
     }
 
-          if (existingDevice ) {
-            return res.status(500).send('This Devices Already Taken ');
-          }
+    if (existingSimNumber) {
+      return res.status(500).send('This Sim Number Already Taken');
+    }
 
+    const createdAt = new Date();
+    const currentTimeIST = moment.tz(createdAt, 'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
+    const newDevice = new Devices({
+      device_id,
+      device_type,
+      customer_id,
+      sim_number,
+      status,
+      created_at: currentTimeIST,
+      updated_at: currentTimeIST,
+    });
 
-          var createdAt = new Date()
-          var currentTimeIST = moment.tz(createdAt,'Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss a');
-          const newDevice = new Devices({ 
-            device_id,
-            device_type,
-            customer_id,
-            sim_number,
-            status,
-         "created_at": currentTimeIST,
-         "updated_at": currentTimeIST,
-
-
-          });
-          const savedDevice = await newDevice.save();
-          console.log('Devices saved successfully:', savedDevice);
-          res.status(200).json({ code: 200, message: 'Devices Added Successfully', addDevices: savedDevice });
-        } catch (error) {
-          console.log(error);
-          res.status(500).json({ code: 500, message: 'Failed to add Devices' });
-        }
+    const savedDevice = await newDevice.save();
+    console.log('Device saved successfully:', savedDevice);
+    res.status(200).json({ code: 200, message: 'Device Added Successfully', addDevice: savedDevice });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ code: 500, message: 'Failed to add Device' });
+  }
 };
+
 
 //========================{Get Device By ID}===========================//
 exports.getDeviceById = async (req, res) => {

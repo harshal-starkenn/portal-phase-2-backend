@@ -10,7 +10,7 @@ const vehicleSchema = new mongoose.Schema({
         type: String,
         required: true, 
     },
-    vehicle_registration: {
+    vehicle_registration: { 
         type: String,
         required: true,
     },
@@ -30,34 +30,14 @@ const vehicleSchema = new mongoose.Schema({
         type: Number,
         default: 1,
     },
-    // status: {
-    //     type: String,
-    //     required: true,
-    // },
-    // created_at: {
-    //     type: Date,
-    //     default: Date.now,
-    // },
-    // created_by: {
-    //     type: String,
-    //     required: true,
-    // },
-    // modified_at: {
-    //     type: Date,
-    //     default: Date.now,
-    // },
-    // modified_by: {
-    //     type: String,
-    //     required: true,
-    // },
+    status: {
+        type: String,
+        default: true,
+    },
+
     created_at: { type: String, required: true },
     updated_at: { type: String                 },
     
-    // updated_by: {
-    //     type: String,
-    //     required: true,
-    // },
-    status:              {type: String,                default: true },
 });
 
 // Create the VehicleModel model
