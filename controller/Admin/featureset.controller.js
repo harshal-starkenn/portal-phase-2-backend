@@ -1,5 +1,9 @@
 const User = require("../../models/Admin/adminCustomers");
 const { featuresetModel } = require("../../models/Admin/featureset.model");
+const moment = require("moment-timezone");
+const {
+  vehicleFeaturesetModel,
+} = require("../../models/Admin/vehicleFeatureset");
 
 //get the total list of featuresets
 const featuresetList = async (req, res) => {
@@ -19,6 +23,11 @@ const featuresetList = async (req, res) => {
 const featuresetAdd = async (req, res) => {
   const requestBody = req.body; // Get the entire request body as the payload is already in the correct format
 
+  let createdAt = new Date();
+  let currentTimeIST = moment
+    .tz(createdAt, "Asia/Kolkata")
+    .format("YYYY-MM-DD HH:mm:ss a");
+
   try {
     const checkFeatureSet = await featuresetModel.findOne({
       featureSetName: requestBody.featureSetName,
@@ -31,6 +40,8 @@ const featuresetAdd = async (req, res) => {
     const newFeatureSet = new featuresetModel({
       ...requestBody, // Spread the entire requestBody to the newFeatureSet object
       status: "true",
+      created_at: currentTimeIST,
+      updated_at: currentTimeIST,
     });
 
     const savedFeatureSet = await newFeatureSet.save();
@@ -46,6 +57,11 @@ const featuresetAdd = async (req, res) => {
 const featuresetEdit = async (req, res) => {
   const { featureSetId } = req.params;
   const updateParams = req.body;
+
+  var createdAt = new Date();
+  var currentTimeIST = moment
+    .tz(createdAt, "Asia/Kolkata")
+    .format("YYYY-MM-DD HH:mm:ss a");
 
   try {
     const existingFeatureSet = await featuresetModel.findOne({
@@ -69,7 +85,7 @@ const featuresetEdit = async (req, res) => {
 
     const updatedFeatureSet = await featuresetModel.findOneAndUpdate(
       { featureSetId },
-      updateParams,
+      { ...updateParams, updated_at: currentTimeIST },
       { new: true }
     );
 
@@ -248,6 +264,241 @@ const featuresetAllCustomerList = async (req, res) => {
   }
 };
 
+//Vehicle featureset
+
+const addVehicleFeatureset = async (req, res) => {
+  const { vehicle_Id, featureSetId } = req.params;
+  const { userId } = req.body;
+
+  let createdAt = new Date();
+  let currentTimeIST = moment
+    .tz(createdAt, "Asia/Kolkata")
+    .format("YYYY-MM-DD HH:mm:ss a");
+
+  try {
+    const getFeatureset = await featuresetModel.findOne({ featureSetId });
+
+    // Extract all properties from getFeatureset using object destructuring
+    const {
+      featureSetName,
+      selectCustomer,
+      mode,
+      CASMode,
+      activationSpeed,
+      alarmThreshold,
+      brakeThreshold,
+      brakeSpeed,
+      detectStationaryObject,
+      allowCompleteBrake,
+      detectOncomingObstacle,
+      safetyMode,
+      ttcThreshold,
+      brakeOnDuration,
+      brakeOffDuration,
+      sleepAlertMode,
+      preWarning,
+      sleepAlertInterval,
+      startTime,
+      stopTime,
+      brakeActivateTime,
+      braking,
+      driverEvalMode,
+      maxLaneChangeThreshold,
+      minLaneChangeThreshold,
+      maxHarshAccelerationThreshold,
+      minHarshAccelerationThreshold,
+      suddenBrakingThreshold,
+      maxSpeedBumpThreshold,
+      minSpeedBumpThreshold,
+      GovernerMode,
+      speedLimit,
+      cruiseMode,
+      vehicleType,
+      obdMode,
+      protocolType,
+      tpmsMode,
+      acceleratorType,
+      brakeType,
+      lazerMode,
+      rfSensorMode,
+      rfAngle,
+      reserved1,
+      reserved2,
+      reserved3,
+      speedSource,
+      slope,
+      offset,
+      delay,
+      rfNameMode,
+      noAlarm,
+      speed,
+      accelerationBypass,
+      rfSensorAbsent,
+      gyroscopeAbsent,
+      hmiAbsent,
+      timeNotSet,
+      accelerationError,
+      brakeError,
+      tpmsError,
+      simCardAbsent,
+      lowBattery,
+      tripNotStarted,
+      bluetoothConnAbsent,
+      obdAbsent,
+      laserSensorAbsent,
+      rfidAbsent,
+      iotAbsent,
+      firmwareOtaUpdate,
+      firewarereserver1,
+      alcoholDetectionMode,
+      alcoholreserved1,
+      driverDrowsinessMode,
+      driverreserved1,
+    } = getFeatureset;
+
+    const AddFeaturesetToVehicle = new vehicleFeaturesetModel({
+      vehicle_Id,
+      userId,
+      featureSetId: getFeatureset.featureSetId,
+      featureSetName,
+      selectCustomer,
+      mode,
+      CASMode,
+      activationSpeed,
+      alarmThreshold,
+      brakeThreshold,
+      brakeSpeed,
+      detectStationaryObject,
+      allowCompleteBrake,
+      detectOncomingObstacle,
+      safetyMode,
+      ttcThreshold,
+      brakeOnDuration,
+      brakeOffDuration,
+      sleepAlertMode,
+      preWarning,
+      sleepAlertInterval,
+      startTime,
+      stopTime,
+      brakeActivateTime,
+      braking,
+      driverEvalMode,
+      maxLaneChangeThreshold,
+      minLaneChangeThreshold,
+      maxHarshAccelerationThreshold,
+      minHarshAccelerationThreshold,
+      suddenBrakingThreshold,
+      maxSpeedBumpThreshold,
+      minSpeedBumpThreshold,
+      GovernerMode,
+      speedLimit,
+      cruiseMode,
+      vehicleType,
+      obdMode,
+      protocolType,
+      tpmsMode,
+      acceleratorType,
+      brakeType,
+      lazerMode,
+      rfSensorMode,
+      rfAngle,
+      reserved1,
+      reserved2,
+      reserved3,
+      speedSource,
+      slope,
+      offset,
+      delay,
+      rfNameMode,
+      noAlarm,
+      speed,
+      accelerationBypass,
+      rfSensorAbsent,
+      gyroscopeAbsent,
+      hmiAbsent,
+      timeNotSet,
+      accelerationError,
+      brakeError,
+      tpmsError,
+      simCardAbsent,
+      lowBattery,
+      tripNotStarted,
+      bluetoothConnAbsent,
+      obdAbsent,
+      laserSensorAbsent,
+      rfidAbsent,
+      iotAbsent,
+      firmwareOtaUpdate,
+      firewarereserver1,
+      alcoholDetectionMode,
+      alcoholreserved1,
+      driverDrowsinessMode,
+      driverreserved1,
+      created_at: currentTimeIST,
+      updated_at: currentTimeIST,
+      status: true,
+    });
+
+    // Save the new instance to the database
+    const saveVehicleFeatureset = await AddFeaturesetToVehicle.save();
+
+    if (saveVehicleFeatureset) {
+      res.status(201).send("Successfully featureset added to vehicle");
+    } else {
+      res.status(404).send("Failed to add featureset");
+    }
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+//edit vehicleFeatureset
+const editVehicleFeatureset = async (req, res) => {
+  const { vehicle_Id } = req.params;
+  const { ...updateData } = req.body;
+
+  let createdAt = new Date();
+  let currentTimeIST = moment
+    .tz(createdAt, "Asia/Kolkata")
+    .format("YYYY-MM-DD HH:mm:ss a");
+
+  try {
+    const updatedFeatureset = await vehicleFeaturesetModel.findOneAndUpdate(
+      { vehicle_Id },
+      { ...updateData, updated_at: currentTimeIST },
+      { new: true }
+    );
+
+    if (!updatedFeatureset) {
+      return res.status(404).send("Vehicle Featureset not found");
+    }
+
+    res.status(200).send("Successfully updated vehicle featureset");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error in updating vehicle featureset");
+  }
+};
+
+//getVehiclefeatureset details by vehicleId
+
+const getVehicleFeatureset = async (req, res) => {
+  const { vehicle_Id } = req.params;
+  try {
+    const getVehicleFeaturesetDetails = await vehicleFeaturesetModel.findOne({
+      vehicle_Id,
+    });
+
+    if (getVehicleFeaturesetDetails) {
+      res.status(200).send({ vehicleData: getVehicleFeaturesetDetails });
+    } else {
+      res.status(404).send("Failed to get vehicleFeatureset Details");
+    }
+  } catch (err) {
+    res.status(500).send("Error in getting vehicleFeatureset Details");
+  }
+};
+
 module.exports = {
   featuresetList,
   featuresetAdd,
@@ -260,4 +511,7 @@ module.exports = {
   featuresetCustomerNotAssignList,
   featureset,
   featuresetAllCustomerList,
+  addVehicleFeatureset,
+  editVehicleFeatureset,
+  getVehicleFeatureset,
 };
