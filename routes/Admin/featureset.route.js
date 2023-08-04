@@ -11,6 +11,9 @@ const {
   featuresetCustomerNotAssignList,
   featureset,
   featuresetAllCustomerList,
+  addVehicleFeatureset,
+  editVehicleFeatureset,
+  getVehicleFeatureset,
 } = require("../../controller/Admin/featureset.controller");
 const featuresetRouter = express.Router();
 
@@ -64,6 +67,24 @@ featuresetRouter.get("/featureset/:featureSetId", featureset);
 featuresetRouter.get(
   "/featureset-get-all-customers",
   featuresetAllCustomerList
+);
+
+//api to add vehicleFeatureset
+featuresetRouter.post(
+  "/featureset-addto-vehicle/:vehicle_Id/:featureSetId",
+  addVehicleFeatureset
+);
+
+//api to edit vehicleFeatureset
+featuresetRouter.put(
+  "/featureset-edit-vehiclefeatureset/:vehicle_Id",
+  editVehicleFeatureset
+);
+
+//api to get vehcleFeaturesetDeails
+featuresetRouter.get(
+  "/featureset-vehicleFeaturest-details/:vehicle_Id",
+  getVehicleFeatureset
 );
 
 module.exports = { featuresetRouter };

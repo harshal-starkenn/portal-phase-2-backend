@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
-const featuresetSchema = mongoose.Schema({
+const vehicleFeaturesetSchema = mongoose.Schema({
+  vehicle_Id: { type: String, required: true },
+  userId: { type: String, required: true },
   featureSetId: {
     type: String,
     required: true,
-    unique: true,
   },
   featureSetName: {
     type: String,
     required: true,
-    unique: true,
   },
   selectCustomer: [
     {
@@ -257,14 +257,14 @@ const featuresetSchema = mongoose.Schema({
   driverreserved1: {
     type: String,
   },
-
-  status: {
-    type: String,
-  },
+  status: { type: String, required: true },
   created_at: { type: String, required: true },
   updated_at: { type: String, required: true },
 });
 
-const featuresetModel = mongoose.model("featureset", featuresetSchema);
+const vehicleFeaturesetModel = mongoose.model(
+  "vehicleFeatureset",
+  vehicleFeaturesetSchema
+);
 
-module.exports = { featuresetModel };
+module.exports = { vehicleFeaturesetModel };
