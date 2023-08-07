@@ -77,8 +77,8 @@ exports.Signup = async (req, res) => {
 
     const savedUser = await newUser.save();
     console.log("Customer Created successfully:");
-    res.status(201).json({
-      code: 201,
+    res.status(200).json({
+      code: 200,
       message: "Customer Created Successfully",
       addUser: savedUser,
     });
@@ -121,7 +121,7 @@ exports.Login = async (req, res) => {
     //     data: {},
     //   });
     // }
-    //============================All Fileds Are Mandatory================================//
+    //============================All Fileds Are Mandatory================================// 
     if (!email || !password) {
       return res.status(400).json({
         statuscode: 400,
@@ -253,6 +253,17 @@ exports.Update = async (req, res) => {
       phone,
     } = req.body;
 
+
+    const existingCustomerEmail1 = await User.findOne({ email: req.body.email });
+    const existingCustomerPhone1 = await User.findOne({ phone: req.body.phone });
+
+    if (existingCustomerEmail1) {
+      return res.status(409).json({ message: "This Email Already Used" });
+    } else if (existingCustomerPhone1) {
+      return res.status(409).json({ message: "This Phone Number Already Used" });
+    }
+
+
 //==========================Date and Time============================================//
     var createdAt = new Date();
     var currentTimeIST = moment.tz(createdAt, "Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss a");
@@ -339,11 +350,11 @@ exports.GetUserById = async (req, res) => {
     return res.status(200).json({
       statuscode: 200,
       status: "OK",
-      message: "User Get Successfull",
+      message: "Customer Get Successfull",
       data,
     });
   } catch (err) {
-    console.log(err, "error in Vehicle Data");
+    console.log(err, "error in Customer Data");
   }
 };
 //============================================{Get- User- By Id} [END]=================================================//

@@ -32,11 +32,11 @@ exports.AddDevice = async (req, res) => {
     const existingSimNumber = await Devices.findOne({ sim_number });
 
     if (existingDevice) {
-      return res.status(500).send("This Device Already Taken");
+      return res.status(409).send("This Device Already Taken");
     }
 
     if (existingSimNumber) {
-      return res.status(500).send('This Sim Number Already Taken');
+      return res.status(409).send('This Sim Number Already Taken');
     }
 
     const createdAt = new Date();
@@ -59,7 +59,6 @@ exports.AddDevice = async (req, res) => {
     res.status(500).json({ code: 500, message: 'Failed to add Device' });
   }
 };
-
 
 //========================{Get Device By ID}===========================//
 exports.getDeviceById = async (req, res) => {
